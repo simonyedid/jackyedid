@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make a Pizza — Jack Yedid</title>
+  <meta name="description" content="Build your own pizza on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🍕 <span class="name">Pizza</span> Maker</h1>
+    <p class="tagline">Pick your toppings, then bake it!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- The pizza itself. The toppings get dropped in here. -->
+      <div class="pizza" id="pizza">
+        <div class="pizza-sauce"></div>
+        <div class="pizza-cheese" id="cheese"></div>
+        <div class="pizza-toppings" id="toppings"></div>
+      </div>
+
+      <p class="pizza-message" id="message">An empty pizza. Add something!</p>
+    </section>
+
+    <section class="card">
+      <h2>🧺 Toppings</h2>
+      <!-- These buttons get made by pizza.js -->
+      <div class="topping-buttons" id="topping-buttons"></div>
+    </section>
+
+    <section class="card">
+      <button id="bake-button">🔥 Bake it!</button>
+      <button id="clear-button">🗑️ Start over</button>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 🚀 jackyedid.com</p>
+  </footer>
+
+  <script src="pizza.js?v=1"></script>
+</body>
+</html>

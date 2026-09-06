@@ -8,6 +8,9 @@
   --accent: #2563eb;
   --accent-2: #3ec1d3;
   --card: #ffffff;
+  --crust: #e0a33e;
+  --sauce: #c8322a;
+  --cheese: #f7d774;
 }
 
 * { box-sizing: border-box; }
@@ -108,22 +111,8 @@ footer {
   opacity: 0.7;
 }
 
-/* ---------- The Pong game page ---------- */
+/* ---------- The Pizza Maker page ---------- */
 
-.game {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 4px solid var(--ink);
-  border-radius: 12px;
-  touch-action: none;      /* stops the page scrolling while you play */
-  cursor: none;
-}
-
-.game-help {
-  font-size: 1rem;
-  margin: 1rem 0;
-}
 
 .back-link {
   text-align: center;
@@ -145,3 +134,57 @@ footer {
   border: 3px solid var(--ink);
   border-radius: 12px;
 }
+
+.pizza {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--crust);
+  box-shadow: 0 6px 0 #b07f2b;
+}
+
+/* Each layer is a smaller circle sitting on top of the one below. */
+.pizza-sauce,
+.pizza-cheese,
+.pizza-toppings {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+}
+
+.pizza-sauce { background: var(--sauce); }
+.pizza-cheese { background: var(--cheese); inset: 12%; }
+.pizza-toppings { inset: 0; }
+
+/* The pizza goes a bit browner once it comes out of the oven. */
+.pizza.baked { filter: saturate(1.3) brightness(0.88); }
+
+.topping {
+  position: absolute;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.pizza-message {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.15rem;
+  margin-bottom: 0;
+}
+
+.topping-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.topping-button {
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+.topping-button:hover { background: var(--cheese); }
