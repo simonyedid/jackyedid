@@ -6,7 +6,7 @@
   <title>Make a Pizza — Jack Yedid</title>
   <meta name="description" content="Build your own pizza on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -19,11 +19,25 @@
   <main>
 
     <section class="card">
-      <!-- The pizza itself. The toppings get dropped in here. -->
-      <div class="pizza" id="pizza">
-        <div class="pizza-sauce"></div>
-        <div class="pizza-cheese" id="cheese"></div>
-        <div class="pizza-toppings" id="toppings"></div>
+      <!-- The oven. The pizza sits inside it and the door shuts to bake. -->
+      <div class="oven">
+        <div class="oven-top">🔥 OVEN</div>
+        <div class="oven-inside" id="oven-inside">
+
+          <!-- The pizza itself. The toppings get dropped in here. -->
+          <div class="pizza" id="pizza">
+            <div class="pizza-sauce"></div>
+            <div class="pizza-cheese" id="cheese"></div>
+            <div class="pizza-toppings" id="toppings"></div>
+            <!-- The cut lines appear here when you slice it. -->
+            <div class="pizza-slices" id="slices" hidden></div>
+          </div>
+
+          <div class="oven-door" id="oven-door"></div>
+        </div>
+
+        <!-- This fills up while it bakes. -->
+        <div class="bake-bar"><div class="bake-bar-fill" id="bake-bar"></div></div>
       </div>
 
       <p class="pizza-message" id="message">An empty pizza. Add something!</p>
@@ -36,7 +50,8 @@
     </section>
 
     <section class="card">
-      <button id="bake-button">🔥 Bake it!</button>
+      <button id="bake-button">🔥 Put it in the oven!</button>
+      <button id="cut-button" hidden>🔪 Cut it into slices</button>
       <button id="keep-button" hidden>📦 Keep it in my pizza box</button>
       <button id="clear-button">🗑️ Start over</button>
     </section>
@@ -56,6 +71,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="pizza.js?v=2"></script>
+  <script src="pizza.js?v=3"></script>
 </body>
 </html>

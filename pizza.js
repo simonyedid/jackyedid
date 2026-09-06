@@ -19,6 +19,8 @@ var TOPPINGS = [
 
 var HOW_MANY_EACH_CLICK = 5;   // how many appear per click
 var HOW_MANY_FIT_IN_THE_BOX = 12;
+var HOW_LONG_IT_BAKES = 5000;   // milliseconds in the oven
+var HOW_MANY_SLICES = 8;
 // --------------------------------------------------
 
 var pizza = document.getElementById("pizza");
@@ -30,9 +32,15 @@ var clearButton = document.getElementById("clear-button");
 var keepButton = document.getElementById("keep-button");
 var boxBox = document.getElementById("box");
 var boxMessage = document.getElementById("box-message");
+var cutButton = document.getElementById("cut-button");
+var ovenDoor = document.getElementById("oven-door");
+var bakeBar = document.getElementById("bake-bar");
+var slices = document.getElementById("slices");
 
 var whatIsOnTop = [];   // the names of everything added so far
 var isBaked = false;
+var isCut = false;
+var inTheOven = false;
 
 // ---------- Making the topping buttons ----------
 
@@ -49,6 +57,10 @@ TOPPINGS.forEach(function (topping) {
 // ---------- Putting toppings on the pizza ----------
 
 function sprinkle(topping) {
+  if (inTheOven) {
+    message.textContent = "It is in the oven! Wait for the ding. 🔥";
+    return;
+  }
   if (isBaked) {
     message.textContent = "That one is already baked! Press Start over.";
     return;
@@ -78,6 +90,7 @@ function sprinkle(topping) {
 // ---------- Baking ----------
 
 bakeButton.addEventListener("click", function () {
+  if (inTheOven) return;
   if (isBaked) {
     message.textContent = "Already baked! Press Start over to make another one.";
     return;
@@ -87,16 +100,82 @@ bakeButton.addEventListener("click", function () {
     return;
   }
 
-  isBaked = true;
-  pizza.classList.add("baked");
-  message.textContent = "🔥 Baking...";
+  // Shut the door, start it spinning, and fill up the timer bar.
+  inTheOven = true;
+  ovenDoor.classList.add("shut");
+  pizza.classList.add("spinning");
+  message.textContent = "🔥 In the oven... it is going round and round!";
 
-  // Wait a moment so it feels like it is really cooking.
-  setTimeout(function () {
-    message.textContent = "🍕 Your " + whatIsOnTop.join(" and ").toLowerCase() +
-                          " pizza is ready! " + scoreIt();
-    keepButton.hidden = false;
-  }, 1500);
+  bakeBar.style.transition = "none";
+  bakeBar.style.width = "0%";
+  // Waiting one frame makes the bar start from empty every time.
+  requestAnimationFrame(function () {
+    bakeBar.style.transition = "width " + HOW_LONG_IT_BAKES + "ms linear";
+    bakeBar.style.width = "100%";
+  });
+
+  setTimeout(comeOutOfTheOven, HOW_LONG_IT_BAKES);
+});
+
+function comeOutOfTheOven() {
+  inTheOven = false;
+  isBaked = true;
+  ovenDoor.classList.remove("shut");
+  pizza.classList.remove("spinning");
+  pizza.classList.add("baked");
+
+  ding();
+
+  message.textContent = "🔔 DING! Your " + whatIsOnTop.join(" and ").toLowerCase() +
+                        " pizza is ready! " + scoreIt();
+  cutButton.hidden = false;
+  keepButton.hidden = false;
+}
+
+// ---------- The ding ----------
+// There is no sound file here. The computer makes the two notes itself.
+
+function ding() {
+  try {
+    var speaker = new (window.AudioContext || window.webkitAudioContext)();
+    [880, 1320].forEach(function (note, position) {
+      var beep = speaker.createOscillator();
+      var loudness = speaker.createGain();
+      beep.type = "sine";
+      beep.frequency.value = note;
+      beep.connect(loudness);
+      loudness.connect(speaker.destination);
+
+      var startAt = speaker.currentTime + position * 0.16;
+      loudness.gain.setValueAtTime(0.0001, startAt);
+      loudness.gain.exponentialRampToValueAtTime(0.25, startAt + 0.02);
+      loudness.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.6);
+      beep.start(startAt);
+      beep.stop(startAt + 0.65);
+    });
+  } catch (whoops) {
+    // Some browsers will not make a noise. The pizza is still cooked.
+  }
+}
+
+// ---------- Cutting it up ----------
+
+cutButton.addEventListener("click", function () {
+  if (isCut) return;
+  isCut = true;
+
+  slices.innerHTML = "";
+  // Half as many lines as slices, because each line cuts all the way across.
+  for (var i = 0; i < HOW_MANY_SLICES / 2; i++) {
+    var cut = document.createElement("div");
+    cut.className = "pizza-cut";
+    cut.style.transform = "rotate(" + (i * (180 / (HOW_MANY_SLICES / 2))) + "deg)";
+    slices.appendChild(cut);
+  }
+  slices.hidden = false;
+
+  cutButton.hidden = true;
+  message.textContent = "🔪 Cut into " + HOW_MANY_SLICES + " slices. Dinner time!";
 });
 
 function scoreIt() {
@@ -113,8 +192,15 @@ clearButton.addEventListener("click", function () {
   toppingsLayer.innerHTML = "";
   whatIsOnTop = [];
   isBaked = false;
+  isCut = false;
+  inTheOven = false;
   keepButton.hidden = true;
-  pizza.classList.remove("baked");
+  cutButton.hidden = true;
+  slices.hidden = true;
+  ovenDoor.classList.remove("shut");
+  pizza.classList.remove("baked", "spinning");
+  bakeBar.style.transition = "none";
+  bakeBar.style.width = "0%";
   message.textContent = "An empty pizza. Add something!";
 });
 
@@ -149,7 +235,7 @@ function showBox() {
     card.className = "food-box-item";
 
     var littlePizza = document.createElement("div");
-    littlePizza.className = "little-pizza";
+    littlePizza.className = "little-pizza" + (kept.cut ? " little-pizza-cut" : "");
     kept.pictures.forEach(function (picture, position) {
       var bit = document.createElement("span");
       bit.className = "little-topping";
@@ -190,6 +276,7 @@ keepButton.addEventListener("click", function () {
 
   pizzaBox.push({
     name: whatIsOnTop.join(" and "),
+    cut: isCut,
     pictures: TOPPINGS.filter(function (t) { return whatIsOnTop.indexOf(t.name) !== -1; })
                       .map(function (t) { return t.picture; })
   });
