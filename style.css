@@ -232,3 +232,21 @@ footer {
 
 /* Space out the game links when there is more than one. */
 .play-link { margin: 0 0.4rem 0.6rem 0; }
+
+/* ---------- The Race page ---------- */
+
+.road {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 0 auto 1rem;
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  touch-action: none;      /* stops the page scrolling while you steer */
+}
+
+.game-help {
+  font-size: 1rem;
+  margin: 1rem 0;
+}
