@@ -6,17 +6,40 @@
   <title>Make a Pizza — Jack Yedid</title>
   <meta name="description" content="Build your own pizza on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=18">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
 
   <header class="hero">
     <h1>🍕 <span class="name">Pizza</span> Maker</h1>
-    <p class="tagline">Pick your toppings, then bake it!</p>
+    <p class="tagline">Take the order. Bake it. Box it. Serve it!</p>
   </header>
 
   <main>
+
+    <!-- The shop building. It is all made out of coloured boxes. -->
+    <section class="card">
+      <div class="shop">
+        <div class="shop-slice">🍕</div>
+        <div class="shop-roof"></div>
+        <div class="shop-sign">PIZZA STORE</div>
+        <div class="shop-front">
+          <div class="shop-window"></div>
+          <div class="shop-door"></div>
+          <div class="shop-window"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🛎️ Your customer</h2>
+      <div class="customer">
+        <div class="customer-face" id="customer-face">🧑</div>
+        <div class="speech" id="order-text">Waiting for someone to come in...</div>
+      </div>
+      <p class="album-message" id="shop-score"></p>
+    </section>
 
     <section class="card">
       <!-- The oven. The pizza sits inside it and the door shuts to bake. -->
@@ -40,6 +63,12 @@
         <div class="bake-bar"><div class="bake-bar-fill" id="bake-bar"></div></div>
       </div>
 
+      <!-- The cardboard box. It only shows up once the pizza is in it. -->
+      <div class="delivery-box" id="delivery-box" hidden>
+        <div class="delivery-lid" id="delivery-lid"></div>
+        <div class="delivery-front">🍕 PIZZA STORE</div>
+      </div>
+
       <p class="pizza-message" id="message">An empty pizza. Add something!</p>
     </section>
 
@@ -52,7 +81,8 @@
     <section class="card">
       <button id="bake-button">🔥 Put it in the oven!</button>
       <button id="cut-button" hidden>🔪 Cut it into slices</button>
-      <button id="keep-button" hidden>📦 Keep it in my pizza box</button>
+      <button id="box-button" hidden>📦 Put it in a pizza box</button>
+      <button id="serve-button" hidden>🛎️ Serve it to the customer</button>
       <button id="clear-button">🗑️ Start over</button>
     </section>
 
@@ -71,6 +101,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="pizza.js?v=3"></script>
+  <script src="pizza.js?v=4"></script>
 </body>
 </html>

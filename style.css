@@ -831,3 +831,138 @@ footer {
     linear-gradient(to bottom, transparent 48%, rgba(60,30,10,.5) 48% 52%, transparent 52%);
   border-radius: 50%;
 }
+
+/* ---------- The pizza shop building ---------- */
+
+.shop {
+  max-width: 380px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* The slice sitting on the roof. */
+.shop-slice {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: -0.4rem;
+}
+
+/* A wide flat triangle makes the roof. */
+.shop-roof {
+  width: 0;
+  height: 0;
+  margin: 0 auto;
+  border-left: 190px solid transparent;
+  border-right: 190px solid transparent;
+  border-bottom: 54px solid var(--sauce);
+  max-width: 100%;
+}
+
+.shop-sign {
+  background: var(--ink);
+  color: var(--cheese);
+  font-weight: bold;
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  padding: 0.4rem;
+  border: 4px solid var(--ink);
+}
+
+.shop-front {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--crust);
+  border: 4px solid var(--ink);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+}
+
+.shop-window {
+  width: 70px;
+  height: 60px;
+  background: #bfe6f5;
+  border: 4px solid var(--ink);
+  border-radius: 6px;
+}
+
+.shop-door {
+  width: 76px;
+  height: 96px;
+  background: #7a5230;
+  border: 4px solid var(--ink);
+  border-radius: 8px 8px 0 0;
+}
+
+/* ---------- The customer ---------- */
+
+.customer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.customer-face { font-size: 3.4rem; line-height: 1; }
+
+/* A speech bubble with a little tail pointing at them. */
+.speech {
+  position: relative;
+  flex: 1;
+  font-weight: bold;
+  background: var(--card);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+}
+
+.speech::before {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 24px;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-right: 11px solid var(--ink);
+}
+
+/* ---------- The cardboard box you serve it in ---------- */
+
+.delivery-box {
+  position: relative;
+  max-width: 340px;
+  margin: 1rem auto 0;
+  height: 96px;
+  background: #c98f52;
+  border: 4px solid #8b5a2b;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.delivery-front {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #5a3a1c;
+  letter-spacing: 2px;
+}
+
+/* The lid drops shut over the box. */
+.delivery-lid {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 52px;
+  background: #dda868;
+  border-bottom: 4px solid #8b5a2b;
+  transform: translateY(-100%);
+  transition: transform 0.7s ease-in-out;
+}
+
+.delivery-lid.shut { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .delivery-lid { transition: none; }
+}

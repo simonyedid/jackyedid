@@ -21,6 +21,12 @@ var HOW_MANY_EACH_CLICK = 5;   // how many appear per click
 var HOW_MANY_FIT_IN_THE_BOX = 12;
 var HOW_LONG_IT_BAKES = 5000;   // milliseconds in the oven
 var HOW_MANY_SLICES = 8;
+
+// The people who come into the shop.
+var CUSTOMERS = ["\uD83E\uDDD1", "\uD83D\uDC75", "\uD83E\uDDD2", "\uD83D\uDC74",
+                 "\uD83D\uDC69", "\uD83D\uDC68", "\uD83E\uDDD1\u200D\uD83D\uDE80"];
+var FEWEST_THINGS_ORDERED = 1;
+var MOST_THINGS_ORDERED = 3;
 // --------------------------------------------------
 
 var pizza = document.getElementById("pizza");
@@ -29,18 +35,28 @@ var buttonsBox = document.getElementById("topping-buttons");
 var message = document.getElementById("message");
 var bakeButton = document.getElementById("bake-button");
 var clearButton = document.getElementById("clear-button");
-var keepButton = document.getElementById("keep-button");
 var boxBox = document.getElementById("box");
 var boxMessage = document.getElementById("box-message");
 var cutButton = document.getElementById("cut-button");
 var ovenDoor = document.getElementById("oven-door");
 var bakeBar = document.getElementById("bake-bar");
 var slices = document.getElementById("slices");
+var boxButton = document.getElementById("box-button");
+var serveButton = document.getElementById("serve-button");
+var deliveryBox = document.getElementById("delivery-box");
+var deliveryLid = document.getElementById("delivery-lid");
+var customerFace = document.getElementById("customer-face");
+var orderText = document.getElementById("order-text");
+var shopScore = document.getElementById("shop-score");
 
 var whatIsOnTop = [];   // the names of everything added so far
 var isBaked = false;
 var isCut = false;
 var inTheOven = false;
+var isBoxed = false;
+var order = [];            // what this customer asked for
+var happyCustomers = 0;
+var customersServed = 0;
 
 // ---------- Making the topping buttons ----------
 
@@ -129,7 +145,6 @@ function comeOutOfTheOven() {
   message.textContent = "🔔 DING! Your " + whatIsOnTop.join(" and ").toLowerCase() +
                         " pizza is ready! " + scoreIt();
   cutButton.hidden = false;
-  keepButton.hidden = false;
 }
 
 // ---------- The ding ----------
@@ -175,7 +190,84 @@ cutButton.addEventListener("click", function () {
   slices.hidden = false;
 
   cutButton.hidden = true;
-  message.textContent = "🔪 Cut into " + HOW_MANY_SLICES + " slices. Dinner time!";
+  boxButton.hidden = false;
+  message.textContent = "🔪 Cut into " + HOW_MANY_SLICES + " slices. Now box it up!";
+});
+
+// ---------- Boxing it up ----------
+
+boxButton.addEventListener("click", function () {
+  isBoxed = true;
+  boxButton.hidden = true;
+  deliveryBox.hidden = false;
+
+  // Wait a moment so the lid is seen shutting rather than starting shut.
+  requestAnimationFrame(function () { deliveryLid.classList.add("shut"); });
+
+  message.textContent = "📦 Boxed up and ready to go!";
+  serveButton.hidden = false;
+});
+
+// ---------- The customer ----------
+
+function newCustomer() {
+  var howMany = FEWEST_THINGS_ORDERED +
+                Math.floor(Math.random() * (MOST_THINGS_ORDERED - FEWEST_THINGS_ORDERED + 1));
+
+  // Shuffle a copy of the toppings and take the first few.
+  var shuffled = TOPPINGS.slice();
+  for (var i = shuffled.length - 1; i > 0; i--) {
+    var swapWith = Math.floor(Math.random() * (i + 1));
+    var keep = shuffled[i];
+    shuffled[i] = shuffled[swapWith];
+    shuffled[swapWith] = keep;
+  }
+  order = shuffled.slice(0, howMany);
+
+  customerFace.textContent = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+  orderText.textContent = "Hello! Can I have a pizza with " +
+                          order.map(function (t) { return t.picture + " " + t.name.toLowerCase(); })
+                               .join(" and ") + ", please?";
+  showShopScore();
+}
+
+function showShopScore() {
+  shopScore.textContent = "Happy customers: " + happyCustomers + " out of " + customersServed;
+}
+
+serveButton.addEventListener("click", function () {
+  var missing = order.filter(function (wanted) {
+    return whatIsOnTop.indexOf(wanted.name) === -1;
+  });
+  var extras = whatIsOnTop.filter(function (name) {
+    return order.every(function (wanted) { return wanted.name !== name; });
+  });
+
+  customersServed++;
+
+  if (missing.length > 0) {
+    customerFace.textContent = "\u2639\uFE0F";
+    orderText.textContent = "Oh no, I asked for " +
+      missing.map(function (t) { return t.name.toLowerCase(); }).join(" and ") + "!";
+  } else if (extras.length > 0) {
+    happyCustomers++;
+    customerFace.textContent = "\uD83D\uDE0A";
+    orderText.textContent = "That is not quite what I asked for, but it looks delicious. Thank you!";
+  } else {
+    happyCustomers++;
+    customerFace.textContent = "\uD83E\uDD29";
+    orderText.textContent = "PERFECT! Exactly what I wanted. Thank you!";
+  }
+
+  showShopScore();
+  keepInMyBox();              // every pizza you sell is remembered
+  serveButton.hidden = true;
+  message.textContent = "Pizza served! Here comes the next customer...";
+
+  setTimeout(function () {
+    startAFreshPizza();
+    newCustomer();
+  }, 2600);
 });
 
 function scoreIt() {
@@ -188,21 +280,27 @@ function scoreIt() {
 
 // ---------- Starting over ----------
 
-clearButton.addEventListener("click", function () {
+function startAFreshPizza() {
   toppingsLayer.innerHTML = "";
   whatIsOnTop = [];
   isBaked = false;
   isCut = false;
+  isBoxed = false;
   inTheOven = false;
-  keepButton.hidden = true;
   cutButton.hidden = true;
+  boxButton.hidden = true;
+  serveButton.hidden = true;
   slices.hidden = true;
+  deliveryBox.hidden = true;
+  deliveryLid.classList.remove("shut");
   ovenDoor.classList.remove("shut");
   pizza.classList.remove("baked", "spinning");
   bakeBar.style.transition = "none";
   bakeBar.style.width = "0%";
   message.textContent = "An empty pizza. Add something!";
-});
+}
+
+clearButton.addEventListener("click", startAFreshPizza);
 
 // ---------- My Pizza Box ----------
 // Kept in this browser, on this device. Not sent anywhere.
@@ -268,7 +366,8 @@ function showBox() {
   });
 }
 
-keepButton.addEventListener("click", function () {
+// Called when a pizza is sold, so every pizza you serve is remembered.
+function keepInMyBox() {
   if (pizzaBox.length >= HOW_MANY_FIT_IN_THE_BOX) {
     boxMessage.textContent = "Your pizza box is full! Eat one with 🗑️ to make room.";
     return;
@@ -282,13 +381,13 @@ keepButton.addEventListener("click", function () {
   });
 
   if (saveBox()) {
-    keepButton.hidden = true;
     showBox();
   } else {
     pizzaBox.pop();
     boxMessage.textContent = "This browser has run out of room to keep pizzas.";
   }
-});
+}
 
 loadBox();
 showBox();
+newCustomer();
