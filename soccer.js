@@ -8,7 +8,7 @@ var HOW_MANY_SHOTS = 5;
 var KEEPER_REACH = 50;      // bigger = the keeper saves more
 var KEEPER_SPEED = 0.09;    // how fast the keeper dives across the goal
 var FLIGHT_LENGTH = 34;     // how many frames the ball takes to get there
-var BALL_ROLL_SPEED = 2.2;  // how fast the ball rolls while you are aiming
+var BALL_ROLL_SPEED = 4.5;  // how fast the ball rolls while you are aiming
 var BALL_ROLL_WIDTH = 120;  // how far it rolls each way
 // ----------------------------------------------
 
