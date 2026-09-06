@@ -250,3 +250,17 @@ footer {
   font-size: 1rem;
   margin: 1rem 0;
 }
+
+/* ---------- The Penalty Shootout page ---------- */
+
+.pitch {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin: 0 auto 1rem;
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  cursor: crosshair;
+  touch-action: manipulation;
+}
