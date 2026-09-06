@@ -8,6 +8,8 @@ var HOW_MANY_SHOTS = 5;
 var KEEPER_REACH = 50;      // bigger = the keeper saves more
 var KEEPER_SPEED = 0.09;    // how fast the keeper dives across the goal
 var FLIGHT_LENGTH = 34;     // how many frames the ball takes to get there
+var BALL_ROLL_SPEED = 2.2;  // how fast the ball rolls while you are aiming
+var BALL_ROLL_WIDTH = 120;  // how far it rolls each way
 // ----------------------------------------------
 
 var pitch = document.getElementById("pitch");
@@ -27,6 +29,7 @@ var KEEPER_WIDTH = 54;
 var KEEPER_HEIGHT = 74;
 
 var ball, keeper, shotsTaken, goalsScored, flying, flightStep, aimX, aimY;
+var shotFrom;               // where the ball was when you kicked it
 var message = "";
 var playing = false;
 var best;
@@ -43,7 +46,8 @@ function newShootout() {
 }
 
 function resetBall() {
-  ball = { x: BALL_HOME_X, y: BALL_HOME_Y };
+  // The ball rolls from side to side, and spins as it goes.
+  ball = { x: BALL_HOME_X, y: BALL_HOME_Y, rollingRight: true, spin: 0 };
   keeper = { x: (GOAL_LEFT + GOAL_RIGHT) / 2 - KEEPER_WIDTH / 2, divingTo: null };
   flying = false;
   flightStep = 0;
@@ -107,10 +111,16 @@ function drawKeeper() {
 }
 
 function drawBall() {
+  // Turn the whole picture a little, draw the ball, then turn it back.
+  // That is how you make something spin.
+  pen.save();
+  pen.translate(ball.x, ball.y);
+  pen.rotate(ball.spin);
   pen.font = "30px serif";
   pen.textAlign = "center";
   pen.textBaseline = "middle";
-  pen.fillText("⚽", ball.x, ball.y);
+  pen.fillText("⚽", 0, 0);
+  pen.restore();
   pen.textBaseline = "alphabetic";
 }
 
@@ -142,16 +152,29 @@ function shootAt(x, y) {
       : GOAL_LEFT + Math.random() * (GOAL_RIGHT - GOAL_LEFT);   // wild guess
   keeper.divingTo = Math.max(GOAL_LEFT, Math.min(GOAL_RIGHT - KEEPER_WIDTH, guess - KEEPER_WIDTH / 2));
 
+  shotFrom = { x: ball.x, y: ball.y };
   flying = true;
   flightStep = 0;
+}
+
+function rollBall() {
+  ball.x += ball.rollingRight ? BALL_ROLL_SPEED : -BALL_ROLL_SPEED;
+
+  // Turn around at the edges so it stays in front of the goal.
+  if (ball.x > BALL_HOME_X + BALL_ROLL_WIDTH) ball.rollingRight = false;
+  if (ball.x < BALL_HOME_X - BALL_ROLL_WIDTH) ball.rollingRight = true;
+
+  // A rolling ball spins the way it is travelling.
+  ball.spin += ball.rollingRight ? 0.09 : -0.09;
 }
 
 function moveBall() {
   flightStep++;
   var howFar = flightStep / FLIGHT_LENGTH;
 
-  ball.x = BALL_HOME_X + (aimX - BALL_HOME_X) * howFar;
-  ball.y = BALL_HOME_Y + (aimY - BALL_HOME_Y) * howFar;
+  ball.x = shotFrom.x + (aimX - shotFrom.x) * howFar;
+  ball.y = shotFrom.y + (aimY - shotFrom.y) * howFar;
+  ball.spin += 0.3;
 
   // The keeper dives towards their guess.
   if (keeper.divingTo !== null) {
@@ -207,6 +230,7 @@ function howDidYouDo() {
 
 function everyFrame() {
   if (flying) moveBall();
+  else if (playing) rollBall();
   drawPitch();
   drawGoal();
   drawKeeper();
