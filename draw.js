@@ -259,5 +259,13 @@ document.getElementById("save-button").addEventListener("click", function () {
   }
 });
 
+// The My Album button jumps down the page to your pictures.
+document.getElementById("go-to-album").addEventListener("click", function () {
+  document.getElementById("album-section").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
+
 loadAlbum();
 showAlbum();
