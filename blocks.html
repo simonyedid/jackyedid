@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block World — Jack Yedid</title>
+  <meta name="description" content="Dig and build a block world on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>⛏️ <span class="name">Block</span> World</h1>
+    <p class="tagline">Dig it up. Build whatever you want.</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- Your world gets drawn on here. -->
+      <canvas id="world" width="640" height="400" class="world"></canvas>
+
+      <div class="mode-buttons">
+        <button id="dig-mode" class="mode-button chosen">⛏️ Dig</button>
+        <button id="build-mode" class="mode-button">🧱 Build</button>
+      </div>
+
+      <p class="game-help">
+        <strong>Hold down</strong> the mouse or your finger and drag to dig or
+        build lots of blocks at once. Your world saves itself.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>🧱 What do you want to build with?</h2>
+      <div class="block-buttons" id="block-buttons"></div>
+    </section>
+
+    <section class="card">
+      <h2>🎒 What you have dug up</h2>
+      <div class="bag" id="bag"></div>
+    </section>
+
+    <section class="card">
+      <button id="new-world-button">🌍 Brand new world</button>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="blocks.js?v=1"></script>
+</body>
+</html>

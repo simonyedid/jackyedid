@@ -451,3 +451,66 @@ footer {
   font-weight: bold;
   margin-top: 0;
 }
+
+/* ---------- The Block World page ---------- */
+
+.world {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;   /* keeps the blocks sharp, not blurry */
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  touch-action: none;           /* stops the page scrolling while you dig */
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.mode-button {
+  flex: 1;
+  font-size: 1.1rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+.block-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.block-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+/* The little colored square on each block button. */
+.block-swatch {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+}
+
+.bag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-weight: bold;
+}
+
+.bag-item {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+}
