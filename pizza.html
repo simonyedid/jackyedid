@@ -6,7 +6,7 @@
   <title>Make a Pizza — Jack Yedid</title>
   <meta name="description" content="Build your own pizza on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -37,7 +37,15 @@
 
     <section class="card">
       <button id="bake-button">🔥 Bake it!</button>
+      <button id="keep-button" hidden>📦 Keep it in my pizza box</button>
       <button id="clear-button">🗑️ Start over</button>
+    </section>
+
+    <section class="card" id="pizza-box">
+      <h2>📦 My Pizza Box</h2>
+      <p class="album-message" id="box-message"></p>
+      <!-- Every pizza you keep turns up in here. -->
+      <div class="food-box" id="box"></div>
     </section>
 
     <p class="back-link"><a href="index.html">← Back to my website</a></p>
@@ -48,6 +56,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="pizza.js?v=1"></script>
+  <script src="pizza.js?v=2"></script>
 </body>
 </html>

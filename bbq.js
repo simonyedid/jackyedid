@@ -28,6 +28,8 @@ var grillBox = document.getElementById("grill");
 var foodBox = document.getElementById("food-picker");
 var message = document.getElementById("message");
 var scoreLine = document.getElementById("score");
+var lunchBoxBox = document.getElementById("lunch");
+var lunchMessage = document.getElementById("lunch-message");
 
 var spots = [];            // one for each place on the grill
 var holdingFood = FOODS[0];
@@ -112,7 +114,8 @@ function takeItOff(spot) {
     message.textContent = "🥶 That " + name.toLowerCase() + " is still raw! Leave it longer.";
   } else if (spot.cooked < BURNT_AT) {
     perfect++;
-    message.textContent = "😋 Perfect " + name.toLowerCase() + "! Well cooked.";
+    message.textContent = "😋 Perfect " + name.toLowerCase() + "! Into the lunch box it goes.";
+    putInLunchBox(spot.food);
     if (perfect > best) {
       best = perfect;
       try { localStorage.setItem("jack-bbq-best", best); } catch (whoops) {}
@@ -178,5 +181,74 @@ document.getElementById("clear-grill").addEventListener("click", function () {
   showGrill();
 });
 
+// ---------- My Lunch Box ----------
+// Everything you cook perfectly is kept here, in this browser.
+
+var lunchBox = [];
+
+function loadLunchBox() {
+  try { lunchBox = JSON.parse(localStorage.getItem("jack-lunch-box")) || []; }
+  catch (whoops) { lunchBox = []; }
+}
+
+function saveLunchBox() {
+  try { localStorage.setItem("jack-lunch-box", JSON.stringify(lunchBox)); }
+  catch (whoops) {}
+}
+
+function putInLunchBox(food) {
+  lunchBox.push({ picture: food.picture, name: food.name });
+  saveLunchBox();
+  showLunchBox();
+}
+
+function showLunchBox() {
+  lunchBoxBox.innerHTML = "";
+
+  if (lunchBox.length === 0) {
+    lunchMessage.textContent = "Empty! Cook something perfectly and it lands in here.";
+    return;
+  }
+
+  lunchMessage.textContent = "You have cooked " + lunchBox.length + " thing" +
+                             (lunchBox.length === 1 ? "" : "s") + " perfectly.";
+
+  lunchBox.forEach(function (kept) {
+    var card = document.createElement("div");
+    card.className = "food-box-item";
+
+    var picture = document.createElement("div");
+    picture.className = "lunch-picture";
+    picture.textContent = kept.picture;
+
+    var label = document.createElement("div");
+    label.className = "food-box-name";
+    label.textContent = kept.name;
+
+    var bin = document.createElement("button");
+    bin.className = "album-button";
+    bin.textContent = "🗑️";
+    bin.title = "Eat this one";
+    bin.addEventListener("click", function () {
+      lunchBox.splice(lunchBox.indexOf(kept), 1);
+      saveLunchBox();
+      showLunchBox();
+    });
+
+    card.appendChild(picture);
+    card.appendChild(label);
+    card.appendChild(bin);
+    lunchBoxBox.appendChild(card);
+  });
+}
+
+document.getElementById("empty-lunch").addEventListener("click", function () {
+  lunchBox = [];
+  saveLunchBox();
+  showLunchBox();
+});
+
+loadLunchBox();
+showLunchBox();
 showGrill();
 showScore();
