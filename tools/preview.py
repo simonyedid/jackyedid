@@ -28,7 +28,7 @@ body = re.sub(r'\s*<script src="[^"]*"></script>', "", body)
 
 # Relative links between pages do not work inside a single-file preview.
 body = re.sub(r'<p class="back-link">.*?</p>', "", body, flags=re.S)
-body = body.replace('href="pizza.html"', 'href="#" onclick="return false"')
+body = re.sub(r'href="[\w-]+\.html"', 'href="#" onclick="return false"', body)
 
 out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "preview.html")
 out.write_text(

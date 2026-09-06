@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drawing Board — Jack Yedid</title>
+  <meta name="description" content="Draw a picture on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🎨 <span class="name">Drawing</span> Board</h1>
+    <p class="tagline">Draw anything you want!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- This white rectangle is what you draw on. -->
+      <canvas id="board" width="600" height="450" class="board"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>🖍️ Colors</h2>
+      <!-- These color buttons get made by draw.js -->
+      <div class="color-buttons" id="color-buttons"></div>
+
+      <h2>🖌️ Brush size</h2>
+      <div class="size-buttons" id="size-buttons"></div>
+    </section>
+
+    <section class="card">
+      <button id="undo-button">↩️ Undo</button>
+      <button id="clear-button">🗑️ Clear it</button>
+      <button id="save-button">💾 Save my picture</button>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 🚀 jackyedid.com</p>
+  </footer>
+
+  <script src="draw.js?v=1"></script>
+</body>
+</html>
