@@ -60,6 +60,15 @@ hard, so a color change can be live but invisible on an ordinary refresh.
 Same for `script.js?v=N` when you change the JavaScript. It costs one
 character and saves Jack from wondering why nothing happened.
 
+`style.css` is shared by every page, so bump it in **all** the HTML files
+at once and keep them on the same number — otherwise a page left on an
+old number serves a stale stylesheet:
+
+    sed -i -E 's|href="style\.css\?v=[0-9]+"|href="style.css?v=N"|' *.html
+
+Per-page scripts (`draw.js`, `movie.js`, ...) are bumped only in their own
+page.
+
 ## Preview artifact
 
 There is a published Artifact that mirrors the site, for viewing changes

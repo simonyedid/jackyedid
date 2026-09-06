@@ -6,7 +6,7 @@
   <title>Drawing Board — Jack Yedid</title>
   <meta name="description" content="Draw a picture on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=11">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -35,7 +35,14 @@
     <section class="card">
       <button id="undo-button">↩️ Undo</button>
       <button id="clear-button">🗑️ Clear it</button>
-      <button id="save-button">💾 Save my picture</button>
+      <button id="save-button">💾 Save to my album</button>
+    </section>
+
+    <section class="card">
+      <h2>🖼️ My Album</h2>
+      <p class="album-message" id="album-message"></p>
+      <!-- Every picture you save turns up in here. -->
+      <div class="album" id="album"></div>
     </section>
 
     <p class="back-link"><a href="index.html">← Back to my website</a></p>
@@ -46,6 +53,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="draw.js?v=1"></script>
+  <script src="draw.js?v=2"></script>
 </body>
 </html>
