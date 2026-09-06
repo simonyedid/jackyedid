@@ -36,3 +36,17 @@ Jack expects to hear "it's live, go look."
 
 **Check your work before pushing.** Open the page in a headless browser
 and look at it — a broken layout is invisible in a diff.
+
+## Privacy
+
+The repo and the site are both public, and the site is written by a
+7-year-old. Keep to first name, general interests, and his own drawings
+or writing.
+
+Never publish: home address, street or neighborhood, school name,
+phone number, email, full birthdate, or his parents' full details.
+Photographs of Jack only if his dad has explicitly asked for that
+specific photo.
+
+If a request would put any of that on the page, say so and suggest a
+safer version instead of just doing it.
