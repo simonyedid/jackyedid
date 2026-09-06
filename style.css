@@ -966,3 +966,34 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .delivery-lid { transition: none; }
 }
+
+/* ---------- Dragging the pizza into the box ---------- */
+
+/* The oven normally hides anything sticking out. While you are
+   dragging, the pizza needs to be able to leave. */
+.oven-inside.lets-things-out { overflow: visible; }
+
+.pizza.draggable {
+  cursor: grab;
+  touch-action: none;   /* so dragging does not scroll the page */
+}
+
+.pizza.being-dragged {
+  cursor: grabbing;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.35);
+}
+
+/* Dropped in: it shrinks away into the box. */
+.pizza.going-in {
+  transition: transform 0.4s ease-in, opacity 0.4s ease-in;
+  transform: scale(0.2) !important;
+  opacity: 0;
+}
+
+/* An open box, waiting for a pizza. */
+.delivery-box { transition: box-shadow 0.3s; }
+.delivery-box:not(:has(.delivery-lid.shut)) {
+  box-shadow: 0 0 0 4px var(--accent-2);
+}

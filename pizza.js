@@ -45,6 +45,7 @@ var boxButton = document.getElementById("box-button");
 var serveButton = document.getElementById("serve-button");
 var deliveryBox = document.getElementById("delivery-box");
 var deliveryLid = document.getElementById("delivery-lid");
+var ovenInside = document.getElementById("oven-inside");
 var customerFace = document.getElementById("customer-face");
 var orderText = document.getElementById("order-text");
 var shopScore = document.getElementById("shop-score");
@@ -54,6 +55,10 @@ var isBaked = false;
 var isCut = false;
 var inTheOven = false;
 var isBoxed = false;
+var canDrag = false;          // you can only drag it once it is cut
+var dragging = false;
+var grabbedAtX = 0;
+var grabbedAtY = 0;
 var order = [];            // what this customer asked for
 var happyCustomers = 0;
 var customersServed = 0;
@@ -191,22 +196,81 @@ cutButton.addEventListener("click", function () {
 
   cutButton.hidden = true;
   boxButton.hidden = false;
-  message.textContent = "🔪 Cut into " + HOW_MANY_SLICES + " slices. Now box it up!";
+
+  // Open the box up and let the pizza be dragged into it.
+  deliveryBox.hidden = false;
+  canDrag = true;
+  pizza.classList.add("draggable");
+  ovenInside.classList.add("lets-things-out");
+
+  message.textContent = "🔪 Cut into " + HOW_MANY_SLICES +
+                        " slices. Now drag the pizza into the box!";
 });
+
+// ---------- Dragging the pizza into the box ----------
+
+pizza.addEventListener("pointerdown", function (event) {
+  if (!canDrag || isBoxed) return;
+  dragging = true;
+  grabbedAtX = event.clientX;
+  grabbedAtY = event.clientY;
+  pizza.setPointerCapture(event.pointerId);
+  pizza.classList.add("being-dragged");
+  event.preventDefault();
+});
+
+pizza.addEventListener("pointermove", function (event) {
+  if (!dragging) return;
+  // Move the pizza by however far the finger has travelled.
+  pizza.style.transform = "translate(" + (event.clientX - grabbedAtX) + "px, " +
+                                         (event.clientY - grabbedAtY) + "px)";
+});
+
+pizza.addEventListener("pointerup", function () {
+  if (!dragging) return;
+  dragging = false;
+  pizza.classList.remove("being-dragged");
+
+  if (isOverTheBox()) {
+    putItInTheBox();
+  } else {
+    // Not on the box, so it slides back to where it started.
+    pizza.style.transform = "";
+    message.textContent = "Try again - drag it right onto the box!";
+  }
+});
+
+// Is the middle of the pizza sitting on top of the box?
+function isOverTheBox() {
+  var pizzaNow = pizza.getBoundingClientRect();
+  var boxNow = deliveryBox.getBoundingClientRect();
+  var middleX = pizzaNow.left + pizzaNow.width / 2;
+  var middleY = pizzaNow.top + pizzaNow.height / 2;
+  return middleX > boxNow.left && middleX < boxNow.right &&
+         middleY > boxNow.top && middleY < boxNow.bottom;
+}
 
 // ---------- Boxing it up ----------
 
-boxButton.addEventListener("click", function () {
+function putItInTheBox() {
   isBoxed = true;
+  canDrag = false;
   boxButton.hidden = true;
-  deliveryBox.hidden = false;
+  pizza.classList.remove("draggable");
+  pizza.classList.add("going-in");        // shrinks down into the box
 
   // Wait a moment so the lid is seen shutting rather than starting shut.
-  requestAnimationFrame(function () { deliveryLid.classList.add("shut"); });
+  setTimeout(function () {
+    pizza.hidden = true;
+    deliveryLid.classList.add("shut");
+  }, 400);
 
   message.textContent = "📦 Boxed up and ready to go!";
   serveButton.hidden = false;
-});
+}
+
+// The button does the same thing, for anyone who would rather not drag.
+boxButton.addEventListener("click", putItInTheBox);
 
 // ---------- The customer ----------
 
@@ -287,6 +351,12 @@ function startAFreshPizza() {
   isCut = false;
   isBoxed = false;
   inTheOven = false;
+  canDrag = false;
+  dragging = false;
+  pizza.hidden = false;
+  pizza.style.transform = "";
+  pizza.classList.remove("draggable", "being-dragged", "going-in");
+  ovenInside.classList.remove("lets-things-out");
   cutButton.hidden = true;
   boxButton.hidden = true;
   serveButton.hidden = true;
