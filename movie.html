@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Maker — Jack Yedid</title>
+  <meta name="description" content="Make your own movie on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🎬 <span class="name">Movie</span> Maker</h1>
+    <p class="tagline">Pick your story, then watch your movie play!</p>
+  </header>
+
+  <main>
+
+    <!-- This is the cinema screen. Your movie plays in here. -->
+    <section class="card">
+      <div class="movie-screen" id="screen">
+        <div class="movie-star" id="star">🎬</div>
+        <p class="movie-caption" id="caption">Your movie will play here</p>
+      </div>
+      <button id="action-button">🎬 ACTION!</button>
+      <button id="again-button" hidden>🎞️ Make another one</button>
+    </section>
+
+    <section class="card">
+      <h2>✏️ What is your movie called?</h2>
+      <input id="title-box" class="title-box" type="text"
+             maxlength="34" value="The Amazing Adventure">
+    </section>
+
+    <section class="card">
+      <h2>🦸 Who is the star?</h2>
+      <div class="picker" id="hero-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🗺️ Where does it happen?</h2>
+      <div class="picker" id="place-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>💥 What happens?</h2>
+      <div class="picker" id="action-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🏁 How does it end?</h2>
+      <div class="picker" id="ending-picker"></div>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="movie.js?v=1"></script>
+</body>
+</html>
