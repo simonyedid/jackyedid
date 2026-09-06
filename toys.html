@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toy Workshop — Jack Yedid</title>
+  <meta name="description" content="Build your own toy on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🧸 <span class="name">Toy</span> Workshop</h1>
+    <p class="tagline">Build a toy, give it a name, keep it in your toy box.</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- Your toy gets drawn here, out of the parts you pick. -->
+      <div class="toy-stand">
+        <div class="toy" id="toy">
+          <div class="toy-part" id="toy-head"></div>
+          <div class="toy-body-row">
+            <div class="toy-arm" id="toy-left-arm"></div>
+            <div class="toy-part" id="toy-body"></div>
+            <div class="toy-arm" id="toy-right-arm"></div>
+          </div>
+          <div class="toy-legs" id="toy-legs"></div>
+        </div>
+      </div>
+      <p class="toy-name-shown" id="toy-name-shown">Nobody yet</p>
+    </section>
+
+    <section class="card">
+      <h2>✏️ What is your toy called?</h2>
+      <input id="name-box" class="title-box" type="text" maxlength="24" value="Bolt">
+    </section>
+
+    <section class="card">
+      <h2>🙂 Head</h2>
+      <div class="picker" id="head-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>👕 Body</h2>
+      <div class="picker" id="body-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🦵 Legs</h2>
+      <div class="picker" id="legs-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🎨 Color</h2>
+      <div class="color-buttons" id="color-picker"></div>
+    </section>
+
+    <section class="card">
+      <button id="keep-button">📦 Put it in my toy box</button>
+      <button id="surprise-button">🎲 Surprise me!</button>
+    </section>
+
+    <section class="card" id="toybox-section">
+      <h2>📦 My Toy Box</h2>
+      <p class="album-message" id="toybox-message"></p>
+      <div class="toybox" id="toybox"></div>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="toys.js?v=1"></script>
+</body>
+</html>

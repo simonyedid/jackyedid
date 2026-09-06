@@ -514,3 +514,142 @@ footer {
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
 }
+
+/* ---------- The Toy Workshop page ---------- */
+
+.toy-stand {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+/* The toy is a head, then arms either side of a body, then legs. */
+.toy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border: 4px solid var(--ink);
+  border-radius: 20px;
+  transition: background 0.3s;
+}
+
+.toy-part { font-size: 3.5rem; line-height: 1; }
+.toy-legs { font-size: 2.75rem; line-height: 1; }
+.toy-arm  { font-size: 2rem; line-height: 1; }
+
+.toy-body-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.toy-name-shown {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.toybox {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.toybox-toy {
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 0.75rem 0.5rem 0.5rem;
+  text-align: center;
+}
+
+.toybox-pictures { font-size: 1.9rem; line-height: 1.1; }
+
+.toybox-name {
+  color: #fff;
+  font-weight: bold;
+  margin: 0.25rem 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+/* The bin button on a toy card needs its own edges back. */
+.toybox-toy .album-button {
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  padding: 0.2rem 0.8rem;
+  flex: none;
+}
+
+/* ---------- The Barbecue page ---------- */
+
+.grill {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 4px solid var(--ink);
+  border-radius: 16px;
+  /* Stripes, like the bars of a real grill. */
+  background: repeating-linear-gradient(
+    to bottom, #3a3f46 0 10px, #2b2f35 10px 20px);
+}
+
+.grill-spot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 96px;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 3px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+}
+
+.grill-spot.has-food {
+  background: rgba(255, 255, 255, 0.16);
+  border-style: solid;
+}
+
+.grill-food { font-size: 2.4rem; line-height: 1; min-height: 2.4rem; }
+
+.cook-bar {
+  width: 100%;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* This fills up as the food cooks. */
+.cook-bar-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 0.1s linear;
+}
+
+.cook-label {
+  font-weight: bold;
+  font-size: 0.95rem;
+  min-height: 1.2rem;
+  background: #fff;
+  border-radius: 6px;
+  padding: 0 0.4rem;
+}
+
+.cook-label:empty { background: none; }
+
+.bbq-message {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+.bbq-score {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 0;
+}
