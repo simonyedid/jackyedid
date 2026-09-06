@@ -6,7 +6,7 @@
   <title>Movie Maker — Jack Yedid</title>
   <meta name="description" content="Make your own movie on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=10">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -22,6 +22,8 @@
     <section class="card">
       <div class="movie-screen" id="screen">
         <div class="movie-star" id="star">🎬</div>
+        <img class="movie-media" id="photo" alt="A picture in Jack's movie" hidden>
+        <video class="movie-media" id="clip" playsinline muted hidden></video>
         <p class="movie-caption" id="caption">Your movie will play here</p>
       </div>
       <button id="action-button">🎬 ACTION!</button>
@@ -32,6 +34,20 @@
       <h2>✏️ What is your movie called?</h2>
       <input id="title-box" class="title-box" type="text"
              maxlength="34" value="The Amazing Adventure">
+    </section>
+
+    <section class="card">
+      <h2>📷 Your own photos and videos</h2>
+      <p>
+        Add your own pictures or clips and they become scenes in your movie.
+        They stay on this device — nothing gets sent anywhere or put on the
+        website.
+      </p>
+      <label class="file-button">
+        📷 Add photos or videos
+        <input id="my-media" type="file" accept="image/*,video/*" multiple hidden>
+      </label>
+      <div class="my-media-list" id="my-media-list"></div>
     </section>
 
     <section class="card">
@@ -62,6 +78,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="movie.js?v=1"></script>
+  <script src="movie.js?v=2"></script>
 </body>
 </html>

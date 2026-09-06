@@ -76,3 +76,11 @@ then publish that file to the URL above. `tools/preview.py` inlines
 `style.css` and `script.js` into one file because an Artifact is a single
 page. The site itself still has no build step — this script is a viewing
 aid and is never part of what gets deployed.
+
+## Jack's own photos and videos
+
+The Movie Maker lets Jack add photos and videos as scenes. They are read
+straight from the device with `URL.createObjectURL` and never leave the
+browser — nothing is uploaded, nothing is committed to the repo, nothing
+appears on the public site. Keep it that way: do not add any feature that
+sends, saves or publishes what he picks.

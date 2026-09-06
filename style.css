@@ -342,3 +342,61 @@ footer {
   color: var(--ink);
   border: 3px solid var(--ink);
 }
+
+/* Photos and videos playing inside the movie screen. */
+.movie-media {
+  width: 100%;
+  height: 74%;
+  /* "contain" keeps the whole picture in view without squashing it,
+     and lets a small photo grow to fill the screen. */
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* The button that opens your photos. It is a label, not a button,
+   because that is how you make a file picker look nice. */
+.file-button {
+  display: inline-block;
+  cursor: pointer;
+  font-weight: bold;
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 0.6rem 1.4rem;
+}
+
+.file-button:hover { transform: translateY(-2px); }
+
+.my-media-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.my-media-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.my-media-thumb {
+  width: 74px;
+  height: 56px;
+  object-fit: cover;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.my-media-words {
+  font: inherit;
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.7rem;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+}
