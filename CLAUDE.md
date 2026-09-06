@@ -50,3 +50,12 @@ specific photo.
 
 If a request would put any of that on the page, say so and suggest a
 safer version instead of just doing it.
+
+## Cache busting
+
+`index.html` links the stylesheet as `style.css?v=N`. Browsers cache CSS
+hard, so a color change can be live but invisible on an ordinary refresh.
+
+**Whenever you change `style.css`, bump that number** (`?v=2` → `?v=3`).
+Same for `script.js?v=N` when you change the JavaScript. It costs one
+character and saves Jack from wondering why nothing happened.

@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jack Yedid</title>
   <meta name="description" content="The official website of Jack Yedid.">
-  <!-- Tells the browser to always check for a fresh version of the page,
-       so Jack sees his changes right after they go live. -->
+  <!-- Keeps browsers from showing an old copy of the site.
+       The ?v=2 on the stylesheet below does the same job for the colors:
+       bump it to v=3, v=4 and so on whenever style.css changes. -->
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
 </head>
 <body>
@@ -68,6 +69,6 @@
     <p>Made by Jack Yedid 🚀 jackyedid.com</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
