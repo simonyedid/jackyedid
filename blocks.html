@@ -6,7 +6,7 @@
   <title>Block World — Jack Yedid</title>
   <meta name="description" content="Dig and build a block world on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -27,9 +27,22 @@
         <button id="build-mode" class="mode-button">🧱 Build</button>
       </div>
 
+      <p class="tool-message" id="tool-message">Digging with your hands. Pick a tool to dig faster!</p>
+
       <p class="game-help">
         <strong>Hold down</strong> the mouse or your finger and drag to dig or
         build lots of blocks at once. Your world saves itself.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>🛠️ What are you digging with?</h2>
+      <!-- These tool buttons get made by blocks.js -->
+      <div class="tool-buttons" id="tool-buttons"></div>
+      <p class="game-help">
+        Your <strong>hands</strong> can only manage soft things, and slowly.
+        The <strong>shovel</strong> is for dirt, the <strong>pickaxe</strong>
+        is for stone and treasure, and the <strong>axe</strong> is for trees.
       </p>
     </section>
 
@@ -55,6 +68,6 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="blocks.js?v=1"></script>
+  <script src="blocks.js?v=2"></script>
 </body>
 </html>

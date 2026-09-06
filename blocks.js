@@ -21,6 +21,28 @@ var BLOCKS = [
   { name: "Sand",    color: "#e6d5a3" }
 ];
 
+// ---------- YOUR TOOLS ----------
+// "quick" blocks come out in one go. "slow" ones take 3 goes and crack
+// first. Anything not in either list needs a different tool.
+// The shovel has no emoji that works everywhere, so it is drawn by hand
+// in a little picture below.
+var TOOLS = [
+  { name: "Hands", picture: "\u270B",
+    quick: ["Leaves", "Glass"],
+    slow: ["Grass", "Dirt", "Sand"] },
+  { name: "Shovel", drawn: true,
+    quick: ["Grass", "Dirt", "Sand"],
+    slow: ["Leaves"] },
+  { name: "Pickaxe", picture: "\u26CF\uFE0F",
+    quick: ["Stone", "Coal", "Diamond", "Gold", "Brick", "Glass"],
+    slow: ["Dirt", "Sand"] },
+  { name: "Axe", picture: "\uD83E\uDE93",
+    quick: ["Wood", "Leaves"],
+    slow: ["Grass"] }
+];
+
+var HITS_WHEN_SLOW = 3;   // how many goes a wrong-ish tool takes
+
 var BLOCK_SIZE = 16;      // how big one block is, in dots
 var TREE_CHANCE = 12;     // 1 in this many spots grows a tree
 // ------------------------------------------------
@@ -38,6 +60,9 @@ var SKY = "#8ecdf0";
 var ground = [];
 var bag = {};                 // how many of each block you have dug up
 var holdingBlock = 0;         // which block the Build mode puts down
+var tool = TOOLS[0];          // what you are digging with
+var cracks = {};              // how many goes each block has had so far
+var lastBlockTouched = "";    // so one drag does not hit the same block twice
 var digging = true;           // true = Dig mode, false = Build mode
 var busy = false;             // true while the mouse is held down
 
@@ -124,6 +149,21 @@ function drawBlock(x, y, block) {
     pen.fillRect(left + 5, top + 11, 3, 3);
   }
 
+  // Cracks show a block is nearly out.
+  var hits = cracks[x + "," + y];
+  if (hits) {
+    pen.strokeStyle = "rgba(0, 0, 0, " + (0.3 + hits * 0.2) + ")";
+    pen.lineWidth = 2;
+    pen.beginPath();
+    pen.moveTo(left + 3, top + 3);
+    pen.lineTo(left + BLOCK_SIZE - 4, top + BLOCK_SIZE - 5);
+    if (hits > 1) {
+      pen.moveTo(left + BLOCK_SIZE - 4, top + 4);
+      pen.lineTo(left + 5, top + BLOCK_SIZE - 3);
+    }
+    pen.stroke();
+  }
+
   // A dark edge on every block so you can see where each one ends.
   pen.strokeStyle = "rgba(0, 0, 0, 0.18)";
   pen.lineWidth = 1;
@@ -145,19 +185,57 @@ function useTool(event) {
   if (spot.x < 0 || spot.x >= ACROSS || spot.y < 0 || spot.y >= DOWN) return;
 
   var whatIsThere = ground[spot.x][spot.y];
+  var key = spot.x + "," + spot.y;
 
   if (digging) {
     if (whatIsThere === -1) return;              // nothing to dig
-    ground[spot.x][spot.y] = -1;
+
+    // Dragging over the same block should not keep hitting it.
+    if (key === lastBlockTouched) return;
+    lastBlockTouched = key;
+
     var name = BLOCKS[whatIsThere].name;
-    bag[name] = (bag[name] || 0) + 1;
-    showBag();
+
+    if (tool.quick.indexOf(name) !== -1) {
+      digItOut(spot, name);
+    } else if (tool.slow.indexOf(name) !== -1) {
+      cracks[key] = (cracks[key] || 0) + 1;
+      if (cracks[key] >= HITS_WHEN_SLOW) digItOut(spot, name);
+      else say(tool.name + " is slow on " + name.toLowerCase() + ". Keep going!");
+    } else {
+      say("You cannot dig " + name.toLowerCase() + " with your " +
+          tool.name.toLowerCase() + ". Try " + whoCanDig(name) + ".");
+      return;
+    }
   } else {
     if (whatIsThere !== -1) return;              // something is already there
+    if (key === lastBlockTouched) return;
+    lastBlockTouched = key;
     ground[spot.x][spot.y] = holdingBlock;
   }
 
   drawWorld();
+}
+
+function digItOut(spot, name) {
+  ground[spot.x][spot.y] = -1;
+  delete cracks[spot.x + "," + spot.y];
+  bag[name] = (bag[name] || 0) + 1;
+  showBag();
+  say("Got a " + name.toLowerCase() + "!");
+}
+
+// Which tool would be better for this block?
+function whoCanDig(name) {
+  var helpers = [];
+  TOOLS.forEach(function (other) {
+    if (other.quick.indexOf(name) !== -1) helpers.push("the " + other.name.toLowerCase());
+  });
+  return helpers.length ? helpers.join(" or ") : "something else";
+}
+
+function say(words) {
+  document.getElementById("tool-message").textContent = words;
 }
 
 world.addEventListener("pointerdown", function (event) {
@@ -166,8 +244,12 @@ world.addEventListener("pointerdown", function (event) {
   useTool(event);
 });
 world.addEventListener("pointermove", function (event) { if (busy) useTool(event); });
-world.addEventListener("pointerup", function () { busy = false; saveWorld(); });
-world.addEventListener("pointerleave", function () { busy = false; });
+world.addEventListener("pointerup", function () {
+  busy = false;
+  lastBlockTouched = "";
+  saveWorld();
+});
+world.addEventListener("pointerleave", function () { busy = false; lastBlockTouched = ""; });
 
 // ---------- The buttons ----------
 
@@ -187,6 +269,35 @@ BLOCKS.forEach(function (block, position) {
     setMode(false);
   });
   blockButtonsBox.appendChild(button);
+});
+
+// A shovel, drawn by hand, because the shovel emoji does not show up
+// on most computers yet.
+var SHOVEL_PICTURE =
+  '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">' +
+  '<rect x="10.5" y="2" width="3" height="11" fill="#8b5a2b"/>' +
+  '<rect x="7.5" y="2" width="9" height="2.4" fill="#8b5a2b"/>' +
+  '<path d="M7 13 h10 v4 a5 5 0 0 1 -10 0 z" fill="#b9c0c7" stroke="#6d757d"/>' +
+  '</svg>';
+
+var toolBox = document.getElementById("tool-buttons");
+
+TOOLS.forEach(function (each, position) {
+  var button = document.createElement("button");
+  button.className = "tool-button";
+  button.innerHTML = (each.drawn ? SHOVEL_PICTURE : each.picture) + " " + each.name;
+  if (position === 0) button.classList.add("chosen");
+
+  button.addEventListener("click", function () {
+    tool = each;
+    var all = toolBox.querySelectorAll("button");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("chosen");
+    button.classList.add("chosen");
+    setMode(true);                       // picking a tool means you want to dig
+    say("Holding the " + each.name.toLowerCase() +
+        ". Good for " + each.quick.join(", ").toLowerCase() + ".");
+  });
+  toolBox.appendChild(button);
 });
 
 var digButton = document.getElementById("dig-mode");

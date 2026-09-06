@@ -653,3 +653,26 @@ footer {
   font-size: 1.2rem;
   margin-top: 0;
 }
+
+/* The tool buttons on the Block World page. */
+.tool-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.05rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+.tool-message {
+  font-weight: bold;
+  font-size: 1.05rem;
+  margin: 1rem 0 0;
+}
