@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong — Jack Yedid</title>
+  <meta name="description" content="Play Pong on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🏓 <span class="name">Pong</span></h1>
+    <p class="tagline">First one to 5 points wins!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- This is the black rectangle the game gets drawn on. -->
+      <canvas id="pong" width="600" height="400" class="game"></canvas>
+
+      <p class="game-help">
+        Move your paddle with the <strong>mouse</strong>, your
+        <strong>finger</strong>, or the <strong>up and down arrow keys</strong>.
+      </p>
+
+      <button id="start-button">Start game</button>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 🚀 jackyedid.com</p>
+  </footer>
+
+  <script src="pong.js?v=1"></script>
+</body>
+</html>
