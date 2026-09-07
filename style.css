@@ -1044,3 +1044,49 @@ footer {
 
 /* Leave room at the bottom so the bar never covers the last card. */
 body { padding-bottom: 5.5rem; }
+
+/* ---------- The Spotify panel ---------- */
+
+.spotify-button { background: #1db954; }   /* Spotify's green */
+
+.spotify-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 4.6rem;          /* sits just above the music bar */
+  z-index: 21;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--card);
+  border-top: 4px solid #1db954;
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.spotify-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.spotify-row .title-box { flex: 1; min-width: 0; }
+
+.spotify-help {
+  font-size: 0.95rem;
+  margin: 0 0 0.6rem;
+}
+
+.spotify-frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+}
+
+/* The big green Open Spotify link. */
+.spotify-open {
+  text-decoration: none;
+  font-size: 1.15rem;
+  padding: 0.6rem 1.4rem;
+}

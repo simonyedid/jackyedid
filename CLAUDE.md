@@ -95,6 +95,15 @@ browser — nothing is uploaded, nothing is committed to the repo, nothing
 appears on the public site. Keep it that way: do not add any feature that
 sends, saves or publishes what he picks.
 
-The same rule ruled out a Spotify embed: it would put a third party's
-tracking on a 7-year-old's public site, and only plays 30 second previews
-without a Premium login. Jack plays his own files instead.
+Spotify is also on the pages, because Jack asked for it twice after the
+trade-offs were explained. It comes in two parts, and the difference
+matters:
+
+- **Open Spotify** is a plain link that opens Spotify in a new tab. No
+  Spotify code runs on Jack's site at all. This is the one he asked for
+  and the one to point people at.
+- **Paste a playlist link** builds a Spotify embed iframe on the page.
+  That does load Spotify's player, so Spotify sees visitors who use it,
+  and it only plays 30 second previews without a Premium login.
+
+Don't quietly widen that: no analytics, no other third-party embeds.
