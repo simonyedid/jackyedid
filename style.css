@@ -15,6 +15,10 @@
 
 * { box-sizing: border-box; }
 
+/* Anything marked "hidden" really is hidden. Some of the buttons below
+   set display themselves, which would otherwise show them anyway. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   padding: 0 1rem 3rem;
@@ -997,3 +1001,46 @@ footer {
 .delivery-box:not(:has(.delivery-lid.shut)) {
   box-shadow: 0 0 0 4px var(--accent-2);
 }
+
+/* ---------- The music bar, on every game page ---------- */
+
+.music-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  background: var(--ink);
+  border-top: 4px solid var(--accent);
+}
+
+.music-button {
+  display: inline-block;
+  cursor: pointer;
+  font: inherit;
+  font-weight: bold;
+  font-size: 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  padding: 0.35rem 0.9rem;
+}
+
+.music-button:hover { transform: translateY(-2px); }
+
+.music-name {
+  color: #fff;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Leave room at the bottom so the bar never covers the last card. */
+body { padding-bottom: 5.5rem; }

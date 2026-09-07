@@ -86,10 +86,15 @@ then publish that file to the URL above. `tools/preview.py` inlines
 page. The site itself still has no build step — this script is a viewing
 aid and is never part of what gets deployed.
 
-## Jack's own photos and videos
+## Jack's own photos, videos and music
 
-The Movie Maker lets Jack add photos and videos as scenes. They are read
+The Movie Maker lets Jack add photos and videos as scenes, and `music.js`
+(on every page) lets him play his own songs. They are read
 straight from the device with `URL.createObjectURL` and never leave the
 browser — nothing is uploaded, nothing is committed to the repo, nothing
 appears on the public site. Keep it that way: do not add any feature that
 sends, saves or publishes what he picks.
+
+The same rule ruled out a Spotify embed: it would put a third party's
+tracking on a 7-year-old's public site, and only plays 30 second previews
+without a Premium login. Jack plays his own files instead.
