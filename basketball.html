@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basketball — Jack Yedid</title>
+  <meta name="description" content="Shoot hoops on Jack Yedid's website.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🏀 <span class="name">Basket</span>ball</h1>
+    <p class="tagline">Pull the ball back and let go. How many can you get?</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <!-- The court gets drawn on here. -->
+      <canvas id="court" width="480" height="560" class="court"></canvas>
+
+      <p class="bbq-message" id="message">Press Start, then pull the ball back and let go!</p>
+
+      <p class="game-help">
+        <strong>Drag back</strong> from the ball with the mouse or your finger,
+        like a catapult, and <strong>let go</strong> to shoot. The further you
+        pull, the harder it goes.
+      </p>
+
+      <button id="tip-off">🏀 Start shooting</button>
+    </section>
+
+    <section class="card">
+      <h2>🏆 Score</h2>
+      <p class="bbq-score" id="score"></p>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="basketball.js?v=1"></script>
+  <script src="stars.js?v=4"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>

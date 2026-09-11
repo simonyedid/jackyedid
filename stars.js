@@ -49,7 +49,8 @@ var GAMES = {
   "movie":  { name: "\uD83C\uDFAC Movie Maker",      star: "play a whole movie" },
   "blocks": { name: "\u26CF\uFE0F Block World",      star: "dig 25 blocks" },
   "toys":   { name: "\uD83E\uDDF8 Toy Workshop",     star: "make a toy" },
-  "bbq":    { name: "\uD83C\uDF56 Barbecue",         star: "cook something perfectly" }
+  "bbq":    { name: "\uD83C\uDF56 Barbecue",         star: "cook something perfectly" },
+  "basketball": { name: "\uD83C\uDFC0 Basketball",   star: "play a whole game of 10 shots" }
 };
 
 var pageName = (location.pathname.split("/").pop() || "index.html").replace(".html", "");
