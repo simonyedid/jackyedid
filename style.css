@@ -255,6 +255,13 @@ footer {
   margin: 1rem 0;
 }
 
+/* The place buttons on the Drawing Board. Small enough that two or three
+   fit on a line on a phone, instead of one long list. */
+#place-picks .picker-button {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.95rem;
+}
+
 /* ---------- The Penalty Shootout page ---------- */
 
 .pitch {
