@@ -5,7 +5,11 @@
 // out there. Win them all and the Big Prize lights up.
 // ============================================================
 
-// ---------- Filling a shelf ----------
+// ---------- SETTINGS ----------
+var HOW_MANY_ON_A_SHELF = 4;
+// ------------------------------
+
+// ---------- Filling the shelves ----------
 
 function fillShelves(box, everyPrize, whatYouHaveWon) {
   box.innerHTML = "";
@@ -13,24 +17,41 @@ function fillShelves(box, everyPrize, whatYouHaveWon) {
   // The names of the ones already won.
   var won = whatYouHaveWon.map(function (prize) { return prize.name; });
 
-  everyPrize.forEach(function (prize) {
-    var spot = document.createElement("div");
-    var haveIt = won.indexOf(prize.name) !== -1;
-    spot.className = "shelf-thing" + (haveIt ? " won" : " in-shadow");
+  // Build one shelf at a time, four things standing on each.
+  for (var first = 0; first < everyPrize.length; first += HOW_MANY_ON_A_SHELF) {
+    var shelf = document.createElement("div");
+    shelf.className = "shelf";
 
-    var picture = document.createElement("span");
-    picture.className = "shelf-picture";
-    picture.textContent = prize.picture;
+    var standingOnIt = document.createElement("div");
+    standingOnIt.className = "shelf-things";
 
-    var label = document.createElement("span");
-    label.className = "shelf-name";
-    // A shadow does not tell you what it is.
-    label.textContent = haveIt ? prize.name : "???";
+    everyPrize.slice(first, first + HOW_MANY_ON_A_SHELF).forEach(function (prize) {
+      var thing = document.createElement("div");
+      var haveIt = won.indexOf(prize.name) !== -1;
+      thing.className = "shelf-thing" + (haveIt ? " won" : " in-shadow");
 
-    spot.appendChild(picture);
-    spot.appendChild(label);
-    box.appendChild(spot);
-  });
+      var picture = document.createElement("span");
+      picture.className = "shelf-picture";
+      picture.textContent = prize.picture;
+
+      var label = document.createElement("span");
+      label.className = "shelf-name";
+      // A shadow does not tell you what it is.
+      label.textContent = haveIt ? prize.name : "???";
+
+      thing.appendChild(picture);
+      thing.appendChild(label);
+      standingOnIt.appendChild(thing);
+    });
+
+    // The plank they are standing on runs the whole way across.
+    var plank = document.createElement("div");
+    plank.className = "shelf-plank";
+
+    shelf.appendChild(standingOnIt);
+    shelf.appendChild(plank);
+    box.appendChild(shelf);
+  }
 }
 
 fillShelves(document.getElementById("toy-shelves"), TOYS, saved.toys);
@@ -43,8 +64,8 @@ function countUp(box, everyPrize, whatYouHaveWon, whatTheyAre) {
                               .filter(function (name, where, list) {
                                 return list.indexOf(name) === where;   // no counting twice
                               }).length;
-  box.textContent = howMany + " of " + everyPrize.length + " " + whatTheyAre +
-                    (howMany === everyPrize.length ? " — all of them! 🎉" : "");
+  box.textContent = "(" + howMany + " of " + everyPrize.length +
+                    (howMany === everyPrize.length ? " — all of them! 🎉" : "") + ")";
   return howMany;
 }
 

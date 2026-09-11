@@ -6,7 +6,7 @@
   <title>My Toy Room — Jack Yedid</title>
   <meta name="description" content="Jack Yedid's toy room, with every prize there is to win.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="style.css?v=36">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -18,22 +18,33 @@
 
   <main>
 
-    <section class="card">
-      <h2>🧸 The toy shelves</h2>
-      <p class="album-message" id="toy-count"></p>
-      <!-- Every toy there is. toyroom.js fills the shelves. -->
-      <div class="shelves" id="toy-shelves"></div>
-    </section>
+    <!-- The room. Wall at the top with shelves on it, floor at the
+         bottom with a rug and a table for the big prize. -->
+    <section class="card room-card">
+      <div class="room">
 
-    <section class="card">
-      <h2>📒 The sticker shelves</h2>
-      <p class="album-message" id="sticker-count"></p>
-      <div class="shelves" id="sticker-shelves"></div>
-    </section>
+        <div class="wall">
+          <div class="window"><span class="sun">☀️</span></div>
 
-    <section class="card big-prize-card">
-      <h2>🏆 The Big Prize</h2>
-      <div class="big-prize" id="big-prize"></div>
+          <p class="wall-sign">🧸 Toys <span id="toy-count"></span></p>
+          <div class="shelf-items" id="toy-shelves"></div>
+
+          <p class="wall-sign">📒 Stickers <span id="sticker-count"></span></p>
+          <div class="shelf-items" id="sticker-shelves"></div>
+        </div>
+
+        <div class="floor">
+          <div class="rug"></div>
+          <div class="table">
+            <div class="big-prize" id="big-prize"></div>
+            <!-- The table it stands on: a top, then two legs. -->
+            <div class="table-top"></div>
+            <div class="table-legs"></div>
+          </div>
+        </div>
+
+      </div>
+
       <p class="album-message" id="big-prize-words"></p>
     </section>
 
@@ -49,7 +60,7 @@
   </footer>
 
   <script src="stars.js?v=2"></script>
-  <script src="toyroom.js?v=1"></script>
+  <script src="toyroom.js?v=3"></script>
   <script src="music.js?v=3"></script>
 </body>
 </html>
