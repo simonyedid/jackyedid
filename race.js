@@ -6,7 +6,37 @@
 
 // ---------- SETTINGS - change these! ----------
 var MY_CAR = "🏎️";
-var OTHER_CARS = ["🚗", "🚙", "🚕", "🚌", "🚚"];
+
+// ---------- THE PLACES YOU DRIVE THROUGH ----------
+// You start on the street. Get past enough cars and the whole world
+// changes. "from" is how many cars you need to reach that place.
+// Copy a block to invent a new one!
+var ZONES = [
+  { name: "🌳 The Street", from: 0,
+    ground: "#3f8f4a", road: "#3a3f46", lines: "#ffffff", edges: "#f5f5f5",
+    scenery: "trees",
+    cars: ["🚗", "🚙", "🚕", "🚌", "🚚"] },
+
+  { name: "🏙️ The City", from: 10,
+    ground: "#4a4a52", road: "#2f333a", lines: "#f2c14e", edges: "#d8dde3",
+    scenery: "buildings",
+    cars: ["🚕", "🚓", "🚌", "🚛", "🛵"] },
+
+  { name: "🛣️ The Highway", from: 20,
+    ground: "#b89b5e", road: "#33373d", lines: "#f2c14e", edges: "#ffffff",
+    scenery: "signs",
+    cars: ["🚚", "🚛", "🚗", "🏍️", "🚙"] },
+
+  { name: "🧊 The Arctic", from: 30,
+    ground: "#e8f4ff", road: "#7fb3cc", lines: "#ffffff", edges: "#bfe6f5",
+    scenery: "ice",
+    cars: ["🛷", "🚙", "🐧", "🦭", "🚜"] },
+
+  { name: "🚀 Outer Space", from: 40,
+    ground: "#05060f", road: "#2a1f4a", lines: "#4fe3e8", edges: "#9d4edd",
+    scenery: "stars",
+    cars: ["🛸", "🚀", "👾", "☄️", "🛰️"] }
+];
 
 var STARTING_SPEED = 4;     // how fast the road moves at the start
 var FASTEST_SPEED = 13;     // it never gets faster than this
@@ -28,10 +58,29 @@ var CAR_WIDTH = 42;
 var CAR_HEIGHT = 52;
 
 var myCar, otherCars, speed, score, best, frame, racing, crashed;
+var zone = ZONES[0];              // where you are driving right now
+var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 
 // Remember the best score between visits, if the browser lets us.
 try { best = Number(localStorage.getItem("jack-race-best")) || 0; }
 catch (whoops) { best = 0; }
+
+// Which place are you in? The last one you have reached enough cars for.
+function whichZone() {
+  var found = ZONES[0];
+  ZONES.forEach(function (place) {
+    if (score >= place.from) found = place;
+  });
+  return found;
+}
+
+function checkForANewPlace() {
+  var nowIn = whichZone();
+  if (nowIn !== zone) {
+    zone = nowIn;
+    bannerUntil = frame + 110;        // show the sign for about 2 seconds
+  }
+}
 
 function newRace() {
   myCar = { x: road.width / 2 - CAR_WIDTH / 2, y: road.height - 110 };
@@ -41,21 +90,25 @@ function newRace() {
   frame = 0;
   crashed = false;
   racing = true;
+  zone = ZONES[0];
+  bannerUntil = 0;
 }
 
 // ---------- Drawing ----------
 
 function drawRoad() {
-  // Grass down both sides.
-  pen.fillStyle = "#3f8f4a";
+  // The ground either side, in the colours of this place.
+  pen.fillStyle = zone.ground;
   pen.fillRect(0, 0, road.width, road.height);
 
+  drawScenery();
+
   // The tarmac.
-  pen.fillStyle = "#3a3f46";
+  pen.fillStyle = zone.road;
   pen.fillRect(ROAD_LEFT, 0, ROAD_RIGHT - ROAD_LEFT, road.height);
 
-  // White lines down the middle, moving to make it look like driving.
-  pen.strokeStyle = "#ffffff";
+  // Lines down the middle, moving to make it look like driving.
+  pen.strokeStyle = zone.lines;
   pen.lineWidth = 6;
   pen.setLineDash([30, 34]);
   pen.lineDashOffset = -(frame * speed) % 64;
@@ -67,11 +120,76 @@ function drawRoad() {
 
   // Edges of the road.
   pen.lineWidth = 4;
-  pen.strokeStyle = "#f5f5f5";
+  pen.strokeStyle = zone.edges;
   pen.beginPath();
   pen.moveTo(ROAD_LEFT, 0); pen.lineTo(ROAD_LEFT, road.height);
   pen.moveTo(ROAD_RIGHT, 0); pen.lineTo(ROAD_RIGHT, road.height);
   pen.stroke();
+}
+
+// Whatever goes past at the sides. It slides down with the road so it
+// looks like you are driving past it.
+function drawScenery() {
+  var slide = (frame * speed) % 120;
+
+  for (var y = -120; y < road.height + 120; y += 120) {
+    var downTo = y + slide;
+
+    if (zone.scenery === "trees") {
+      sideBySide(downTo, function (x) {
+        pen.font = "30px serif";
+        pen.textAlign = "center";
+        pen.fillText("\uD83C\uDF33", x, downTo);
+      });
+
+    } else if (zone.scenery === "buildings") {
+      sideBySide(downTo, function (x) {
+        pen.fillStyle = "#6b6b78";
+        pen.fillRect(x - 20, downTo - 70, 40, 70);
+        pen.fillStyle = "#f2c14e";        // lit windows
+        for (var wy = downTo - 60; wy < downTo - 10; wy += 18) {
+          pen.fillRect(x - 12, wy, 9, 9);
+          pen.fillRect(x + 3, wy, 9, 9);
+        }
+      });
+
+    } else if (zone.scenery === "signs") {
+      sideBySide(downTo, function (x) {
+        pen.fillStyle = "#8a8f96";
+        pen.fillRect(x - 2, downTo - 40, 4, 40);   // the pole
+        pen.fillStyle = "#2a9d3f";
+        pen.fillRect(x - 18, downTo - 58, 36, 20); // the green sign
+      });
+
+    } else if (zone.scenery === "ice") {
+      sideBySide(downTo, function (x) {
+        pen.font = "28px serif";
+        pen.textAlign = "center";
+        pen.fillText("\uD83C\uDF32", x, downTo);
+        pen.fillStyle = "#bfe6f5";
+        pen.beginPath();
+        pen.arc(x, downTo + 40, 12, 0, Math.PI * 2);   // a lump of ice
+        pen.fill();
+      });
+
+    } else if (zone.scenery === "stars") {
+      // Stars are scattered about rather than lined up.
+      pen.fillStyle = "#ffffff";
+      for (var i = 0; i < 4; i++) {
+        var starX = ((i * 97 + y * 3) % (GRASS - 8)) + 4;
+        pen.beginPath();
+        pen.arc(starX, downTo + i * 17, 1.6, 0, Math.PI * 2);
+        pen.arc(road.width - starX, downTo + i * 23, 1.6, 0, Math.PI * 2);
+        pen.fill();
+      }
+    }
+  }
+}
+
+// Draw the same thing on the left and the right of the road.
+function sideBySide(downTo, draw) {
+  draw(GRASS / 2);
+  draw(road.width - GRASS / 2);
 }
 
 function drawCar(car, picture) {
@@ -89,6 +207,22 @@ function drawScore() {
   pen.fillText("Score " + score, 12, 34);
   pen.font = "bold 16px 'Trebuchet MS', sans-serif";
   pen.fillText("Best " + best, 12, 58);
+
+  // Where you are now, in the top corner.
+  pen.textAlign = "right";
+  pen.fillText(zone.name, road.width - 12, 34);
+
+  // A big sign when you first arrive somewhere new.
+  if (frame < bannerUntil) {
+    pen.fillStyle = "rgba(0, 0, 0, 0.6)";
+    pen.fillRect(0, road.height / 2 - 46, road.width, 92);
+    pen.textAlign = "center";
+    pen.fillStyle = "#ffffff";
+    pen.font = "bold 17px 'Trebuchet MS', sans-serif";
+    pen.fillText("WELCOME TO", road.width / 2, road.height / 2 - 12);
+    pen.font = "bold 27px 'Trebuchet MS', sans-serif";
+    pen.fillText(zone.name, road.width / 2, road.height / 2 + 22);
+  }
 }
 
 function drawMessage(bigWords, smallWords) {
@@ -112,7 +246,7 @@ function addCarIfItIsTime() {
   otherCars.push({
     x: ROAD_LEFT + lane * laneWidth + laneWidth / 2 - CAR_WIDTH / 2,
     y: -CAR_HEIGHT,
-    picture: OTHER_CARS[Math.floor(Math.random() * OTHER_CARS.length)]
+    picture: zone.cars[Math.floor(Math.random() * zone.cars.length)]
   });
 }
 
@@ -149,6 +283,7 @@ function moveEverything() {
       otherCars.splice(i, 1);
       score += 1;
       if (speed < FASTEST_SPEED) speed += 0.25;
+      checkForANewPlace();
     }
   }
 }
