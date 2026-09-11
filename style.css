@@ -1836,3 +1836,19 @@ body { padding-top: 3rem; }
 }
 
 .court:active { cursor: grabbing; }
+
+/* The TRANSFORM button in the racing game. */
+#transform-button {
+  background: #9d4edd;
+  border-color: #fff;
+  animation: transform-glow 1.2s ease-in-out infinite;
+}
+
+@keyframes transform-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.7); }
+  50%      { box-shadow: 0 0 0 10px rgba(157, 78, 221, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #transform-button { animation: none; }
+}

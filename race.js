@@ -17,9 +17,9 @@ var ZONES = [
     scenery: "trees",
     cars: ["🚗", "🚙", "🚕", "🚌", "🚚"] },
 
-  { name: "🏙️ The City", from: 10,
-    ground: "#4a4a52", road: "#2f333a", lines: "#f2c14e", edges: "#d8dde3",
-    scenery: "buildings",
+  { name: "🗽 New York City", from: 10,
+    ground: "#5fb8e0", road: "#3a3f46", lines: "#f2c14e", edges: "#ffffff",
+    scenery: "newyork",          // skyscrapers, then a bridge over the sea
     cars: ["🚕", "🚓", "🚌", "🚛", "🛵"] },
 
   { name: "🛣️ The Highway", from: 20,
@@ -39,15 +39,17 @@ var ZONES = [
     cars: ["🛸", "🚀", "👾", "☄️", "🛰️"] }
 ];
 
-var STARTING_SPEED = 4;     // how fast the road moves at the start
-var FASTEST_SPEED = 13;     // it never gets faster than this
-var HOW_OFTEN_A_CAR = 90;   // a new car every this many frames (smaller = harder)
-var STEERING_SPEED = 7;     // how quickly your car moves left and right
+var STARTING_SPEED = 7;     // how fast the road moves at the start
+var FASTEST_SPEED = 20;     // it never gets faster than this
+var SPEEDS_UP_BY = 0.4;     // how much faster after every car you pass
+var HOW_OFTEN_A_CAR = 74;   // a new car every this many frames (smaller = harder)
+var STEERING_SPEED = 10;    // how quickly your car moves left and right
 // ----------------------------------------------
 
 var road = document.getElementById("road");
 var pen = road.getContext("2d");
 var goButton = document.getElementById("go-button");
+var transformButton = document.getElementById("transform-button");
 
 var siteColors = getComputedStyle(document.documentElement);
 var BLUE = siteColors.getPropertyValue("--accent").trim();
@@ -64,6 +66,9 @@ var UP_IN_THE_AIR = 0;
 var myCar, otherCars, speed, score, best, frame, racing, crashed;
 var zone = ZONES[0];              // where you are driving right now
 var flyingNow = 0;                // 0 on the ground, 1 fully flying
+var transformed = false;          // has the car turned into a rocket?
+var endingAt = 0;                 // when to show the Earth at the end
+var showingEarth = false;
 var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 
 // Remember the best score between visits, if the browser lets us.
@@ -100,6 +105,10 @@ function newRace() {
   racing = true;
   zone = ZONES[0];
   bannerUntil = 0;
+  transformed = false;
+  showingEarth = false;
+  endingAt = 0;
+  transformButton.hidden = true;
 }
 
 // ---------- Drawing ----------
@@ -150,16 +159,44 @@ function drawScenery() {
         pen.fillText("\uD83C\uDF33", x, downTo);
       });
 
-    } else if (zone.scenery === "buildings") {
-      sideBySide(downTo, function (x) {
-        pen.fillStyle = "#6b6b78";
-        pen.fillRect(x - 20, downTo - 70, 40, 70);
-        pen.fillStyle = "#f2c14e";        // lit windows
-        for (var wy = downTo - 60; wy < downTo - 10; wy += 18) {
-          pen.fillRect(x - 12, wy, 9, 9);
-          pen.fillRect(x + 3, wy, 9, 9);
+    } else if (zone.scenery === "newyork") {
+      // New York in the daytime: skyscrapers, then a bridge over the sea,
+      // then skyscrapers again, over and over as you drive.
+      var bridgeBit = Math.floor((y + 1200) / 120) % 3 === 1;
+
+      if (bridgeBit) {
+        sideBySide(downTo, function (x) {
+          // The sea is the ground colour here, so just add the bridge.
+          pen.fillStyle = "#8a5a2b";
+          pen.fillRect(x - GRASS / 2, downTo - 14, GRASS, 14);   // the deck
+          pen.fillStyle = "#c8322a";
+          pen.fillRect(x - 5, downTo - 86, 10, 72);              // a tower
+          pen.strokeStyle = "#c8322a";                            // the cables
+          pen.lineWidth = 2;
+          pen.beginPath();
+          pen.moveTo(x - GRASS / 2, downTo - 14);
+          pen.lineTo(x, downTo - 80);
+          pen.lineTo(x + GRASS / 2, downTo - 14);
+          pen.stroke();
+        });
+        // A boat on the water now and then.
+        if (Math.floor(y / 120) % 2 === 0) {
+          pen.font = "20px serif";
+          pen.textAlign = "center";
+          pen.fillText("\u26F5", GRASS / 2, downTo + 44);
         }
-      });
+
+      } else {
+        sideBySide(downTo, function (x) {
+          pen.fillStyle = "#8e99a8";                 // daytime grey skyscraper
+          pen.fillRect(x - 22, downTo - 96, 44, 96);
+          pen.fillStyle = "#cfe3f2";                 // windows catching the sun
+          for (var wy = downTo - 86; wy < downTo - 8; wy += 16) {
+            pen.fillRect(x - 15, wy, 10, 9);
+            pen.fillRect(x + 4, wy, 10, 9);
+          }
+        });
+      }
 
     } else if (zone.scenery === "signs") {
       sideBySide(downTo, function (x) {
@@ -201,6 +238,9 @@ function sideBySide(downTo, draw) {
 }
 
 function drawCar(car, picture, isMine) {
+  // Once you have transformed, your car IS a rocket.
+  if (isMine && transformed) picture = "\uD83D\uDE80";
+
   var middleX = car.x + CAR_WIDTH / 2;
   var middleY = car.y + CAR_HEIGHT / 2;
 
@@ -224,8 +264,10 @@ function drawCar(car, picture, isMine) {
   pen.save();
   pen.translate(middleX, middleY + bob);
 
-  // The rocket flames, out of the back, flickering.
-  pen.font = (26 + Math.sin(frame * 0.5) * 5) + "px serif";
+  // The rocket flames, out of the back, flickering. A transformed
+  // rocket has much bigger ones.
+  var flameSize = transformed ? 40 : 26;
+  pen.font = (flameSize + Math.sin(frame * 0.5) * 6) + "px serif";
   pen.globalAlpha = flyingNow;
   pen.fillText("\uD83D\uDD25", 0, CAR_HEIGHT / 2 + 10);
   pen.globalAlpha = 1;
@@ -256,9 +298,11 @@ function drawScore() {
     pen.textAlign = "center";
     pen.fillStyle = "#ffffff";
     pen.font = "bold 17px 'Trebuchet MS', sans-serif";
-    pen.fillText("WELCOME TO", road.width / 2, road.height / 2 - 12);
+    pen.fillText(transformed && zone.flying ? "YOU ARE NOW A" : "WELCOME TO",
+                 road.width / 2, road.height / 2 - 12);
     pen.font = "bold 27px 'Trebuchet MS', sans-serif";
-    pen.fillText(zone.name, road.width / 2, road.height / 2 + 22);
+    pen.fillText(transformed && zone.flying ? "\uD83D\uDE80 ROCKET!" : zone.name,
+                 road.width / 2, road.height / 2 + 22);
   }
 }
 
@@ -300,6 +344,9 @@ function moveEverything() {
 
   // In space the car lifts off and floats higher up the screen.
   // It moves there slowly, so you see it take off.
+  // The TRANSFORM button only makes sense where you are flying.
+  transformButton.hidden = !(zone.flying && racing && !transformed);
+
   var wantsToFly = zone.flying ? 1 : 0;
   flyingNow += (wantsToFly - flyingNow) * 0.04;
   myCar.y = ON_THE_GROUND + (UP_IN_THE_AIR - ON_THE_GROUND) * flyingNow;
@@ -325,7 +372,7 @@ function moveEverything() {
     if (otherCars[i].y > road.height) {
       otherCars.splice(i, 1);
       score += 1;
-      if (speed < FASTEST_SPEED) speed += 0.25;
+      if (speed < FASTEST_SPEED) speed += SPEEDS_UP_BY;
       checkForANewPlace();
     }
   }
@@ -334,19 +381,75 @@ function moveEverything() {
 function crash() {
   racing = false;
   crashed = true;
+  transformButton.hidden = true;
   if (typeof giveAStar === "function") giveAStar();   // a star for finishing a race
   if (score > best) {
     best = score;
     try { localStorage.setItem("jack-race-best", best); } catch (whoops) {}
   }
-  goButton.hidden = false;
-  goButton.textContent = "🏁 Race again";
+  // Show the crash for a moment, then head home to Earth.
+  endingAt = frame + 100;
+}
+
+// ---------- Coming home ----------
+
+// A big Earth comes up at the end to say well done.
+function drawTheEarth() {
+  var howLongFor = frame - endingAt;
+
+  // Space, with stars.
+  pen.fillStyle = "#05060f";
+  pen.fillRect(0, 0, road.width, road.height);
+  pen.fillStyle = "#ffffff";
+  for (var i = 0; i < 40; i++) {
+    var starX = (i * 137) % road.width;
+    var starY = (i * 211) % road.height;
+    pen.beginPath();
+    pen.arc(starX, starY, 1.5, 0, Math.PI * 2);
+    pen.fill();
+  }
+
+  // The Earth grows as you come closer to it.
+  var howBig = Math.min(120, 24 + howLongFor * 1.6);
+  pen.font = (howBig * 2) + "px serif";
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+  pen.fillText("\uD83C\uDF0D", road.width / 2, road.height / 2 - 30);
+
+  // Then the words, once it has grown.
+  if (howLongFor > 60) {
+    pen.fillStyle = "#ffffff";
+    pen.textBaseline = "alphabetic";
+    pen.font = "bold 34px 'Trebuchet MS', sans-serif";
+    pen.fillText("WELL DONE!", road.width / 2, road.height - 120);
+    pen.font = "bold 19px 'Trebuchet MS', sans-serif";
+    pen.fillText("You got home past " + score + " cars", road.width / 2, road.height - 88);
+    pen.fillText("Best ever: " + best, road.width / 2, road.height - 62);
+
+    if (goButton.hidden) {
+      goButton.hidden = false;
+      goButton.textContent = "\uD83C\uDFC1 Race again";
+    }
+  }
 }
 
 // ---------- The game loop ----------
 
 function everyFrame() {
   if (racing) moveEverything();
+
+  // Once the crash has been seen, fly home to Earth instead.
+  if (crashed && !showingEarth) {
+    frame++;
+    if (frame > endingAt) { showingEarth = true; endingAt = frame; }
+  }
+
+  if (showingEarth) {
+    frame++;
+    drawTheEarth();
+    requestAnimationFrame(everyFrame);
+    return;
+  }
 
   drawRoad();
   for (var i = 0; i < otherCars.length; i++) drawCar(otherCars[i], otherCars[i].picture);
@@ -384,9 +487,18 @@ function steerTo(clientX) {
 road.addEventListener("pointermove", function (event) { steerTo(event.clientX); });
 road.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
 
+
+transformButton.addEventListener("click", function () {
+  if (!zone.flying || transformed) return;
+  transformed = true;
+  transformButton.hidden = true;
+  bannerUntil = frame + 90;          // reuse the big sign to shout about it
+});
+
 goButton.addEventListener("click", function () {
   newRace();
   goButton.hidden = true;
+  crashed = false;
 });
 
 // Show the road sitting still until the first race starts.
