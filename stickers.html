@@ -6,7 +6,7 @@
   <title>My Sticker Book — Jack Yedid</title>
   <meta name="description" content="Jack Yedid's sticker book.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=37">
+  <link rel="stylesheet" href="style.css?v=39">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -30,6 +30,9 @@
 
         <div class="book-page" id="page" hidden>
           <div class="page-slots" id="slots"></div>
+          <p class="page-empty-note" id="page-empty-note" hidden>
+            Empty! Play games to earn stickers.
+          </p>
 
           <!-- What you write on this page. -->
           <label class="page-writing-label" for="page-writing">✏️ What I want to say about this page:</label>
@@ -40,9 +43,9 @@
           <div class="keyboard" id="keyboard"></div>
 
           <div class="page-bottom">
-            <button id="page-back">◀ Back</button>
+            <button id="page-back">◀ Back page</button>
             <span class="page-number" id="page-number"></span>
-            <button id="page-next">Next ▶</button>
+            <button id="page-next">Next page ▶</button>
           </div>
           <button class="book-shut" id="shut">Close my book</button>
         </div>
@@ -65,7 +68,7 @@
   </footer>
 
   <script src="stars.js?v=2"></script>
-  <script src="stickers.js?v=3"></script>
+  <script src="stickers.js?v=4"></script>
   <script src="keyboard.js?v=1"></script>
   <script src="music.js?v=3"></script>
 </body>

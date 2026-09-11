@@ -1612,8 +1612,9 @@ body { padding-top: 3rem; }
   max-width: 100%;
 }
 
-/* Not won yet: just a dark shape standing on the shelf. */
+/* Not won yet: just a dark shape, on a shelf or in the book. */
 .in-shadow .shelf-picture,
+.in-shadow .sticker-picture,
 .in-shadow .big-prize-picture {
   filter: brightness(0);
   opacity: 0.4;
@@ -1766,4 +1767,16 @@ body { padding-top: 3rem; }
 .key.chosen {
   background: var(--cheese);
   outline: 3px solid var(--accent);
+}
+
+/* A page in the book with nothing won on it yet. */
+.page-empty-note {
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 0.75rem;
+}
+
+/* A sticker that has not been won: its place is waiting, in shadow. */
+.page-slot.in-shadow {
+  border: 3px dashed rgba(31, 41, 51, 0.3);
 }

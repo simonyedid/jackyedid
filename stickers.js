@@ -17,14 +17,18 @@ var page = document.getElementById("page");
 var slots = document.getElementById("slots");
 var writing = document.getElementById("page-writing");
 var pageNumber = document.getElementById("page-number");
+var emptyNote = document.getElementById("page-empty-note");
 var progress = document.getElementById("progress");
 var stillToPlay = document.getElementById("still-to-play");
 
-// Every prize goes in the book: stickers and toys together.
-var allPrizes = saved.stickers.concat(saved.toys);
+// The book has a place for EVERY prize there is, stickers then toys.
+// The ones not won yet sit in their place as shadows.
+var everyPrize = STICKERS.concat(TOYS);
 
-// At least one page, even when there is nothing in it yet.
-var howManyPages = Math.max(1, Math.ceil(allPrizes.length / STICKERS_ON_A_PAGE));
+// The names of the ones actually won.
+var won = saved.stickers.concat(saved.toys).map(function (prize) { return prize.name; });
+
+var howManyPages = Math.ceil(everyPrize.length / STICKERS_ON_A_PAGE);
 var openAt = 0;
 
 // ---------- What you wrote on each page ----------
@@ -54,23 +58,34 @@ function showPage() {
   slots.innerHTML = "";
 
   var firstOnThisPage = openAt * STICKERS_ON_A_PAGE;
+  var anyWonOnThisPage = false;
 
   for (var i = 0; i < STICKERS_ON_A_PAGE; i++) {
-    var prize = allPrizes[firstOnThisPage + i];
+    var prize = everyPrize[firstOnThisPage + i];
     var slot = document.createElement("div");
 
-    if (prize) {
-      slot.className = "page-slot stuck";
+    if (!prize) {
+      // Past the end of the list, so nothing belongs here at all.
+      slot.className = "page-slot empty";
+      slots.appendChild(slot);
+      continue;
+    }
+
+    var haveIt = won.indexOf(prize.name) !== -1;
+    if (haveIt) anyWonOnThisPage = true;
+
+    slot.className = "page-slot " + (haveIt ? "stuck" : "in-shadow");
+    if (haveIt) {
       // Tip each one a little, like a real sticker stuck on by hand.
       slot.style.transform = "rotate(" + (Math.random() * 10 - 5) + "deg)";
-      slot.innerHTML = '<span class="sticker-picture">' + prize.picture + "</span>" +
-                       '<span class="sticker-name">' + prize.name + "</span>";
-    } else {
-      slot.className = "page-slot empty";
-      slot.textContent = "";
     }
+    slot.innerHTML = '<span class="sticker-picture">' + prize.picture + "</span>" +
+                     '<span class="sticker-name">' + (haveIt ? prize.name : "???") + "</span>";
     slots.appendChild(slot);
   }
+
+  // A page with nothing on it yet says so.
+  emptyNote.hidden = anyWonOnThisPage;
 
   writing.value = writings[openAt] || "";
   pageNumber.textContent = "Page " + (openAt + 1) + " of " + howManyPages;
@@ -119,12 +134,11 @@ Object.keys(GAMES).forEach(function (name) {
              "⭐".repeat(howMany) + "☆".repeat(STARS_IN_A_GAME - howMany));
 });
 
-if (allPrizes.length === 0) {
-  progress.textContent = "Empty! Play games to get stickers.";
+if (won.length === 0) {
+  progress.textContent = "Empty! Play games to earn stickers.";
 } else {
-  progress.textContent = allPrizes.length +
-    (allPrizes.length === 1 ? " prize" : " prizes") + " in the book · " +
-    totalStars + " stars altogether";
+  progress.textContent = won.length + " of " + everyPrize.length +
+    " stuck in · " + totalStars + " stars altogether";
 }
 
 stillToPlay.innerHTML = "Fill up all " + STARS_IN_A_GAME +
