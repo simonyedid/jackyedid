@@ -1237,3 +1237,11 @@ body { padding-bottom: 5.5rem; }
   color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.45);
 }
+
+/* The "sound on" button, only shown when the browser
+   will not let the music start by itself. */
+.sound-on {
+  right: auto;
+  left: 1rem;
+  background: rgba(255, 240, 190, 0.2);
+}
