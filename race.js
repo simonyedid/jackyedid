@@ -50,6 +50,7 @@ var road = document.getElementById("road");
 var pen = road.getContext("2d");
 var goButton = document.getElementById("go-button");
 var transformButton = document.getElementById("transform-button");
+var exploreButton = document.getElementById("explore-button");
 
 var siteColors = getComputedStyle(document.documentElement);
 var BLUE = siteColors.getPropertyValue("--accent").trim();
@@ -67,8 +68,16 @@ var myCar, otherCars, speed, score, best, frame, racing, crashed;
 var zone = ZONES[0];              // where you are driving right now
 var flyingNow = 0;                // 0 on the ground, 1 fully flying
 var transformed = false;          // has the car turned into a rocket?
-var endingAt = 0;                 // when to show the Earth at the end
-var showingEarth = false;
+var endingAt = 0;                 // when the landing starts
+var showingEarth = false;         // true once the landing has begun
+var exploring = false;            // driving about the desert afterwards
+var holdingUp = false;
+var holdingDown = false;
+
+// The things hidden in the desert to go and find.
+var DESERT_THINGS = ["\uD83C\uDF35", "\uD83D\uDC8E", "\uD83C\uDFFA", "\uD83E\uDD98", "\uD83C\uDFDD\uFE0F"];
+var toFind = [];
+var explorer = { x: 0, y: 0 };
 var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 
 // Remember the best score between visits, if the browser lets us.
@@ -107,8 +116,10 @@ function newRace() {
   bannerUntil = 0;
   transformed = false;
   showingEarth = false;
+  exploring = false;
   endingAt = 0;
   transformButton.hidden = true;
+  exploreButton.hidden = true;
 }
 
 // ---------- Drawing ----------
@@ -387,51 +398,169 @@ function crash() {
     best = score;
     try { localStorage.setItem("jack-race-best", best); } catch (whoops) {}
   }
-  // Show the crash for a moment, then head home to Earth.
+  // Show the crash for a moment, then land in the desert.
   endingAt = frame + 100;
 }
 
 // ---------- Coming home ----------
 
-// A big Earth comes up at the end to say well done.
-function drawTheEarth() {
-  var howLongFor = frame - endingAt;
-
-  // Space, with stars.
-  pen.fillStyle = "#05060f";
+// A desert on Earth, with the sun and some dunes.
+function drawDesert() {
+  var sky = pen.createLinearGradient(0, 0, 0, road.height * 0.55);
+  sky.addColorStop(0, "#7fc8f0");
+  sky.addColorStop(1, "#ffe3b0");
+  pen.fillStyle = sky;
   pen.fillRect(0, 0, road.width, road.height);
-  pen.fillStyle = "#ffffff";
-  for (var i = 0; i < 40; i++) {
-    var starX = (i * 137) % road.width;
-    var starY = (i * 211) % road.height;
+
+  pen.font = "46px serif";
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+  pen.fillText("\u2600\uFE0F", road.width - 60, 60);
+
+  pen.fillStyle = "#e6c489";
+  pen.fillRect(0, road.height * 0.5, road.width, road.height);
+
+  // Dunes rolling across the sand.
+  pen.fillStyle = "#d9b273";
+  for (var d = 0; d < 3; d++) {
     pen.beginPath();
-    pen.arc(starX, starY, 1.5, 0, Math.PI * 2);
+    pen.arc(road.width * (0.2 + d * 0.32), road.height * (0.56 + d * 0.05), 90, Math.PI, 0);
+    pen.fill();
+  }
+}
+
+// The rocket coming down out of the sky onto the sand.
+function drawLanding() {
+  var howLongFor = frame - endingAt;
+  var comingDown = Math.min(1, howLongFor / 120);
+
+  drawDesert();
+
+  var landsAt = road.height * 0.72;
+  var rocketY = -60 + (landsAt + 60) * comingDown;
+
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+
+  if (comingDown < 1) {
+    // Flames underneath while it is still coming down.
+    pen.font = (30 + Math.sin(frame * 0.5) * 6) + "px serif";
+    pen.fillText("\uD83D\uDD25", road.width / 2, rocketY + 42);
+  } else {
+    // A puff of dust once it has touched down.
+    pen.fillStyle = "rgba(217, 178, 115, 0.85)";
+    pen.beginPath();
+    pen.ellipse(road.width / 2, landsAt + 34, 62, 12, 0, 0, Math.PI * 2);
     pen.fill();
   }
 
-  // The Earth grows as you come closer to it.
-  var howBig = Math.min(120, 24 + howLongFor * 1.6);
-  pen.font = (howBig * 2) + "px serif";
-  pen.textAlign = "center";
-  pen.textBaseline = "middle";
-  pen.fillText("\uD83C\uDF0D", road.width / 2, road.height / 2 - 30);
+  pen.font = "56px serif";
+  pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F", road.width / 2, rocketY);
 
-  // Then the words, once it has grown.
-  if (howLongFor > 60) {
+  if (howLongFor > 140) {
+    pen.fillStyle = "rgba(0, 0, 0, 0.55)";
+    pen.fillRect(0, road.height - 152, road.width, 122);
     pen.fillStyle = "#ffffff";
     pen.textBaseline = "alphabetic";
-    pen.font = "bold 34px 'Trebuchet MS', sans-serif";
-    pen.fillText("WELL DONE!", road.width / 2, road.height - 120);
-    pen.font = "bold 19px 'Trebuchet MS', sans-serif";
-    pen.fillText("You got home past " + score + " cars", road.width / 2, road.height - 88);
-    pen.fillText("Best ever: " + best, road.width / 2, road.height - 62);
+    pen.font = "bold 30px 'Trebuchet MS', sans-serif";
+    pen.fillText("WELL DONE!", road.width / 2, road.height - 114);
+    pen.font = "bold 17px 'Trebuchet MS', sans-serif";
+    pen.fillText("You arrived at the desert.", road.width / 2, road.height - 86);
+    pen.fillText("Now you can explore!", road.width / 2, road.height - 62);
+    pen.fillText("You got past " + score + " cars \u00B7 Best " + best,
+                 road.width / 2, road.height - 38);
 
+    if (goButton.hidden) {
+      goButton.hidden = false;
+      goButton.textContent = "\uD83C\uDFC1 Race again";
+      exploreButton.hidden = false;
+    }
+  }
+}
+
+// ---------- Exploring the desert ----------
+
+function startExploring() {
+  exploring = true;
+  showingEarth = false;
+  exploreButton.hidden = true;
+  goButton.hidden = true;
+
+  explorer.x = road.width / 2;
+  explorer.y = road.height * 0.72;
+
+  // Hide things about the sand to go and find.
+  toFind = DESERT_THINGS.map(function (picture) {
+    return {
+      picture: picture,
+      x: 40 + Math.random() * (road.width - 80),
+      y: road.height * 0.56 + Math.random() * (road.height * 0.36),
+      found: false
+    };
+  });
+}
+
+function moveExplorer() {
+  if (holdingLeft) explorer.x -= 4;
+  if (holdingRight) explorer.x += 4;
+  if (holdingUp) explorer.y -= 4;
+  if (holdingDown) explorer.y += 4;
+
+  // Stay on the sand.
+  if (explorer.x < 24) explorer.x = 24;
+  if (explorer.x > road.width - 24) explorer.x = road.width - 24;
+  if (explorer.y < road.height * 0.52) explorer.y = road.height * 0.52;
+  if (explorer.y > road.height - 30) explorer.y = road.height - 30;
+
+  // Drive into something and you have found it.
+  toFind.forEach(function (thing) {
+    if (thing.found) return;
+    var awayX = thing.x - explorer.x;
+    var awayY = thing.y - explorer.y;
+    if (Math.sqrt(awayX * awayX + awayY * awayY) < 34) thing.found = true;
+  });
+}
+
+function drawExploring() {
+  drawDesert();
+
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+  toFind.forEach(function (thing) {
+    pen.font = "34px serif";
+    pen.globalAlpha = thing.found ? 1 : 0.4;      // faint until you find it
+    pen.fillText(thing.picture, thing.x, thing.y);
+    pen.globalAlpha = 1;
+  });
+
+  pen.font = "44px serif";
+  pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F", explorer.x, explorer.y);
+
+  var howManyFound = toFind.filter(function (t) { return t.found; }).length;
+
+  pen.textAlign = "left";
+  pen.textBaseline = "alphabetic";
+  pen.fillStyle = "#5a3a1c";
+  pen.font = "bold 20px 'Trebuchet MS', sans-serif";
+  pen.fillText("Found " + howManyFound + " of " + toFind.length, 12, 32);
+  pen.font = "bold 14px 'Trebuchet MS', sans-serif";
+  pen.fillText("Drive about with the arrow keys or your finger", 12, 54);
+
+  if (howManyFound === toFind.length) {
+    pen.textAlign = "center";
+    pen.fillStyle = "rgba(0, 0, 0, 0.55)";
+    pen.fillRect(0, road.height / 2 - 40, road.width, 80);
+    pen.fillStyle = "#ffffff";
+    pen.font = "bold 25px 'Trebuchet MS', sans-serif";
+    pen.fillText("You explored it all! \uD83C\uDFC6", road.width / 2, road.height / 2 + 8);
     if (goButton.hidden) {
       goButton.hidden = false;
       goButton.textContent = "\uD83C\uDFC1 Race again";
     }
   }
 }
+
+exploreButton.addEventListener("click", startExploring);
 
 // ---------- The game loop ----------
 
@@ -441,12 +570,20 @@ function everyFrame() {
   // Once the crash has been seen, fly home to Earth instead.
   if (crashed && !showingEarth) {
     frame++;
-    if (frame > endingAt) { showingEarth = true; endingAt = frame; }
+    if (frame > endingAt) { showingEarth = true; endingAt = frame; }   // start landing
+  }
+
+  if (exploring) {
+    frame++;
+    moveExplorer();
+    drawExploring();
+    requestAnimationFrame(everyFrame);
+    return;
   }
 
   if (showingEarth) {
     frame++;
-    drawTheEarth();
+    drawLanding();
     requestAnimationFrame(everyFrame);
     return;
   }
@@ -470,10 +607,15 @@ var holdingRight = false;
 document.addEventListener("keydown", function (event) {
   if (event.key === "ArrowLeft") { holdingLeft = true; event.preventDefault(); }
   if (event.key === "ArrowRight") { holdingRight = true; event.preventDefault(); }
+  // Up and down are only used for driving about the desert.
+  if (event.key === "ArrowUp") { holdingUp = true; event.preventDefault(); }
+  if (event.key === "ArrowDown") { holdingDown = true; event.preventDefault(); }
 });
 document.addEventListener("keyup", function (event) {
   if (event.key === "ArrowLeft") holdingLeft = false;
   if (event.key === "ArrowRight") holdingRight = false;
+  if (event.key === "ArrowUp") holdingUp = false;
+  if (event.key === "ArrowDown") holdingDown = false;
 });
 
 // Slide a finger or the mouse across the road to steer.
@@ -484,7 +626,16 @@ function steerTo(clientX) {
   myCar.x = acrossTheRoad - CAR_WIDTH / 2;
 }
 
-road.addEventListener("pointermove", function (event) { steerTo(event.clientX); });
+road.addEventListener("pointermove", function (event) {
+  if (exploring) {
+    // In the desert you can go any direction, so follow the finger.
+    var box = road.getBoundingClientRect();
+    explorer.x = (event.clientX - box.left) * (road.width / box.width);
+    explorer.y = (event.clientY - box.top) * (road.height / box.height);
+    return;
+  }
+  steerTo(event.clientX);
+});
 road.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
 
 
