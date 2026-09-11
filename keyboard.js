@@ -149,28 +149,61 @@ function listenToMe(key) {
 
   var Listener = window.SpeechRecognition || window.webkitSpeechRecognition;
   listener = new Listener();
-  listener.lang = navigator.language || "en-GB";
-  listener.interimResults = false;
+
+  // Asking for partial words as well as finished ones matters: some
+  // browsers only ever send the partial kind, so asking only for
+  // finished ones means nothing ever arrives.
+  listener.interimResults = true;
+  listener.continuous = false;
   listener.maxAlternatives = 1;
 
+  var finishedWords = "";
+  var bestGuessSoFar = "";
+
   listener.addEventListener("result", function (event) {
-    var heard = event.results[0][0].transcript;
-    // Start with a space if there are already words there.
-    var needsASpace = writingBox.value.length > 0 &&
-                      !/\s$/.test(writingBox.value);
-    typeThis((needsASpace ? " " : "") + heard);
+    finishedWords = "";
+    bestGuessSoFar = "";
+
+    // Go through everything heard this time, not just the first bit.
+    for (var i = 0; i < event.results.length; i++) {
+      var words = event.results[i][0].transcript;
+      if (event.results[i].isFinal) finishedWords += words;
+      else bestGuessSoFar += words;
+    }
+
+    // Show the words as they are heard, so you can see it working.
+    var showing = (finishedWords + bestGuessSoFar).trim();
+    if (showing) say("\uD83C\uDFA4 " + showing);
   });
 
   listener.addEventListener("error", function (event) {
-    stopListening(key, event.error === "not-allowed"
-      ? "The microphone is not switched on for this website."
-      : "I did not catch that. Try again!");
+    var why = "I did not catch that. Try again!";
+    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      why = "The microphone is not switched on for this website. " +
+            "Look for a microphone button in the address bar.";
+    } else if (event.error === "no-speech") {
+      why = "I did not hear anything. Try again a bit louder!";
+    } else if (event.error === "network") {
+      why = "The listening needs the internet, and it could not get there.";
+    }
+    stopListening(key, why);
   });
 
-  // Listening stops on its own once you stop talking. Only tidy up
-  // here if nothing has gone wrong, so a problem message stays put.
+  // Listening stops on its own once you stop talking. Whatever was
+  // heard gets written down then - even if only a best guess arrived.
   listener.addEventListener("end", function () {
-    if (listening) stopListening(key);
+    if (!listening) return;          // something already went wrong
+
+    var heard = (finishedWords || bestGuessSoFar).trim();
+
+    if (heard) {
+      // Start with a space if there are already words there.
+      var needsASpace = writingBox.value.length > 0 && !/\s$/.test(writingBox.value);
+      typeThis((needsASpace ? " " : "") + heard);
+      stopListening(key, "\u2705 Wrote: " + heard);
+    } else {
+      stopListening(key, "I did not hear anything. Try again!");
+    }
   });
 
   try {
@@ -179,7 +212,7 @@ function listenToMe(key) {
     key.classList.add("listening");
     say("Listening... say something! \uD83C\uDFA4");
   } catch (whoops) {
-    say("The microphone would not start.");
+    stopListening(key, "The microphone would not start. Try tapping it again.");
   }
 }
 
