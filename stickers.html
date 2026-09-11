@@ -4,35 +4,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Sticker Book — Jack Yedid</title>
-  <meta name="description" content="Jack Yedid's sticker book and prizes.">
+  <meta name="description" content="Jack Yedid's sticker book.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=30">
+  <link rel="stylesheet" href="style.css?v=31">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
 
   <header class="hero">
     <h1>📒 <span class="name">Sticker</span> Book</h1>
-    <p class="tagline">Every prize I have won for playing my games.</p>
   </header>
 
   <main>
 
     <section class="card">
+      <!-- The book. It starts shut. Press the cover to open it. -->
+      <div class="book" id="book">
+
+        <button class="book-cover" id="cover">
+          <span class="cover-picture">📒</span>
+          <span class="cover-title">My Sticker Book</span>
+          <span class="cover-by">by Jack Yedid</span>
+          <span class="cover-open">Press to open →</span>
+        </button>
+
+        <div class="book-page" id="page" hidden>
+          <div class="page-slots" id="slots"></div>
+
+          <!-- What you write on this page. -->
+          <label class="page-writing-label" for="page-writing">What I want to say about this page:</label>
+          <textarea id="page-writing" class="page-writing" rows="2" maxlength="140"
+                    placeholder="Write something here..."></textarea>
+
+          <div class="page-bottom">
+            <button id="page-back">◀ Back</button>
+            <span class="page-number" id="page-number"></span>
+            <button id="page-next">Next ▶</button>
+          </div>
+          <button class="book-shut" id="shut">Close my book</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="card">
       <h2>⭐ How am I doing?</h2>
       <p class="album-message" id="progress"></p>
       <p class="game-help" id="still-to-play"></p>
-    </section>
-
-    <section class="card">
-      <h2>📒 My stickers</h2>
-      <!-- The stickers get stuck in here by stickers.js -->
-      <div class="sticker-page" id="sticker-page"></div>
-    </section>
-
-    <section class="card">
-      <h2>🧸 My toy prizes</h2>
-      <div class="sticker-page" id="toy-shelf"></div>
     </section>
 
     <p class="back-link"><a href="index.html">← Back to my website</a></p>
@@ -44,7 +62,7 @@
   </footer>
 
   <script src="stars.js?v=1"></script>
-  <script src="stickers.js?v=1"></script>
+  <script src="stickers.js?v=2"></script>
   <script src="music.js?v=3"></script>
 </body>
 </html>

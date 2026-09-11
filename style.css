@@ -1387,24 +1387,128 @@ body { padding-top: 3rem; }
 .prize-button:hover { background: var(--cheese); }
 .prize-picture { font-size: 2.4rem; line-height: 1.1; }
 
-/* ---------- The sticker book pages ---------- */
+/* ---------- The sticker book ---------- */
 
-.sticker-page {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
+.book {
+  max-width: 460px;
+  margin: 0 auto;
 }
 
-.sticker {
+/* The cover, while the book is shut. */
+.book-cover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 2.5rem 1rem;
+  background: #c0392b;
+  color: #fff8e7;
+  border: 5px solid var(--ink);
+  border-left-width: 14px;        /* the spine */
+  border-radius: 6px 16px 16px 6px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.cover-picture { font-size: 3.4rem; line-height: 1; }
+.cover-title { font-size: 1.7rem; font-weight: bold; }
+.cover-by { opacity: 0.85; }
+.cover-open { margin-top: 0.75rem; font-size: 0.95rem; opacity: 0.9; }
+
+/* A page, once the book is open. */
+.book-page {
+  background: #fffdf5;
+  border: 5px solid var(--ink);
+  border-left-width: 14px;
+  border-radius: 6px 16px 16px 6px;
+  padding: 1.25rem;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Four places to stick things, two across. */
+.page-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.page-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.2rem;
-  padding: 0.9rem 0.5rem;
+  min-height: 104px;
+  border-radius: 14px;
+}
+
+.page-slot.stuck {
   background: var(--cheese);
   border: 3px dashed var(--ink);
-  border-radius: 16px;
+}
+
+/* An empty place waiting for a sticker. */
+.page-slot.empty {
+  border: 3px dashed rgba(31, 41, 51, 0.28);
 }
 
 .sticker-picture { font-size: 2.6rem; line-height: 1.1; }
 .sticker-name { font-weight: bold; font-size: 0.95rem; }
+
+/* What you write on the page. */
+.page-writing-label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.page-writing {
+  font: inherit;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: #fffdf5;
+  color: var(--ink);
+  border: none;
+  /* Writing lines, like a real book. */
+  border-bottom: 2px solid rgba(31, 41, 51, 0.35);
+  resize: vertical;
+}
+
+.page-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.page-number { font-weight: bold; }
+
+.page-bottom button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+}
+
+.book-shut {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+/* The flick of a page being turned. */
+@keyframes turn-the-page {
+  from { transform: rotateY(-14deg); opacity: 0.55; }
+  to   { transform: rotateY(0);      opacity: 1; }
+}
+
+.book-page.turning { animation: turn-the-page 0.3s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .book-page.turning { animation: none; }
+}
