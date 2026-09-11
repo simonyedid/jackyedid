@@ -6,9 +6,16 @@
 // ============================================================
 
 // ---------- SETTINGS - change these! ----------
-var PORTAL_OPENING = 90;      // frames the portal takes to open
-var GOING_THROUGH = 55;       // frames you spend going through it
+var PORTAL_OPENING = 120;     // frames the portal takes to open
+var GOING_THROUGH = 70;       // frames you spend going through it
 var WALKING_SPEED = 0.08;     // how quickly you get to where you tapped
+
+// Inside the portal there are paper airplanes and colorful things
+// whizzing round. These are the colors they come in.
+var PORTAL_COLORS = ["#e63946", "#f77f00", "#fcbf49", "#2a9d3f",
+                     "#2563eb", "#3ec1d3", "#9d4edd", "#ff8fab", "#ffffff"];
+var HOW_MANY_PLANES = 9;
+var HOW_MANY_COLORFUL_THINGS = 26;
 // ----------------------------------------------
 
 // ---------- THE PLACES YOU CAN GO ----------
@@ -433,6 +440,76 @@ function planet(x, y, size, colour, spots) {
   pen.fill();
 }
 
+// ---------- What is inside the portal ----------
+
+// A paper airplane, folded out of a triangle, pointing where it flies.
+function paperPlane(x, y, size, turn, colour) {
+  pen.save();
+  pen.translate(x, y);
+  pen.rotate(turn);
+
+  pen.fillStyle = colour;
+  pen.beginPath();
+  pen.moveTo(size, 0);                       // the nose
+  pen.lineTo(-size, -size * 0.6);            // one wing
+  pen.lineTo(-size * 0.4, 0);                // the tail
+  pen.lineTo(-size, size * 0.6);             // the other wing
+  pen.closePath();
+  pen.fill();
+
+  // The fold down the middle, so it looks like folded paper.
+  pen.strokeStyle = "rgba(31, 41, 51, 0.3)";
+  pen.lineWidth = 1.5;
+  pen.beginPath();
+  pen.moveTo(size, 0);
+  pen.lineTo(-size * 0.4, 0);
+  pen.stroke();
+
+  pen.restore();
+}
+
+// Paper airplanes flying round and round the portal, and colorful things
+// with them - little squares, circles and ribbons spinning into it.
+function insideThePortal(middleX, middleY, howWide) {
+  for (var plane = 0; plane < HOW_MANY_PLANES; plane++) {
+    var turn = paperFrame * 0.035 + plane * (Math.PI * 2 / HOW_MANY_PLANES);
+    var away = howWide * (0.55 + Math.sin(paperFrame * 0.03 + plane) * 0.25);
+    paperPlane(middleX + Math.cos(turn) * away,
+               middleY + Math.sin(turn) * away * 0.7,
+               20, turn + Math.PI / 2,
+               PORTAL_COLORS[plane % PORTAL_COLORS.length]);
+  }
+
+  for (var thing = 0; thing < HOW_MANY_COLORFUL_THINGS; thing++) {
+    var spin = paperFrame * 0.06 + thing * 1.4;
+    var out = howWide * (0.25 + ((thing * 37) % 100) / 130);
+    var atX = middleX + Math.cos(spin) * out;
+    var atY = middleY + Math.sin(spin) * out * 0.7;
+
+    pen.fillStyle = PORTAL_COLORS[thing % PORTAL_COLORS.length];
+    if (thing % 3 === 0) {
+      // a little square of paper, tumbling
+      pen.save();
+      pen.translate(atX, atY);
+      pen.rotate(spin * 2);
+      pen.fillRect(-5, -5, 10, 10);
+      pen.restore();
+    } else if (thing % 3 === 1) {
+      // a spot
+      pen.beginPath();
+      pen.arc(atX, atY, 5, 0, Math.PI * 2);
+      pen.fill();
+    } else {
+      // a curly ribbon
+      pen.strokeStyle = PORTAL_COLORS[thing % PORTAL_COLORS.length];
+      pen.lineWidth = 3;
+      pen.beginPath();
+      pen.arc(atX, atY, 9, spin, spin + 2.4);
+      pen.stroke();
+    }
+  }
+}
+
 // ---------- Which place did you draw? ----------
 
 // Turn what you wrote into plain little letters with nothing else in it,
@@ -703,13 +780,17 @@ function drawThePortal() {
   pen.arc(middleX, middleY, 20 + howFarOpen * 40 + goingThrough * 460, 0, Math.PI * 2);
   pen.fill();
 
+  // PAPER AIRPLANES and colorful things, whizzing about inside it.
+  insideThePortal(middleX, middleY, biggest * 0.9);
+
   // Sparkles round the edge.
   pen.fillStyle = "#ffffff";
   for (var s = 0; s < 14; s++) {
-    var turn = paperFrame * 0.04 + s;
-    var away = biggest + Math.sin(paperFrame * 0.1 + s * 2) * 16;
+    var sparkleTurn = paperFrame * 0.04 + s;
+    var sparkleAway = biggest + Math.sin(paperFrame * 0.1 + s * 2) * 16;
     pen.beginPath();
-    pen.arc(middleX + Math.cos(turn) * away, middleY + Math.sin(turn) * away, 3, 0, Math.PI * 2);
+    pen.arc(middleX + Math.cos(sparkleTurn) * sparkleAway,
+            middleY + Math.sin(sparkleTurn) * sparkleAway, 3, 0, Math.PI * 2);
     pen.fill();
   }
 
