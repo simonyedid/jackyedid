@@ -93,6 +93,12 @@ function showChosen(box, button) {
 
 // ---------- Drawing ----------
 
+// When you have gone into the paper it is showing another place, so
+// drawing on it (and rubbing it out) waits until you come back.
+function weAreInsideThePaper() {
+  return typeof insideThePaper !== "undefined" && insideThePaper;
+}
+
 // The board on screen can be smaller than the real picture,
 // so work out where on the picture the finger actually is.
 function findSpot(event) {
@@ -109,6 +115,7 @@ function rememberPicture() {
 }
 
 board.addEventListener("pointerdown", function (event) {
+  if (weAreInsideThePaper()) return;
   rememberPicture();
   drawing = true;
   board.setPointerCapture(event.pointerId);
@@ -126,7 +133,7 @@ board.addEventListener("pointerdown", function (event) {
 });
 
 board.addEventListener("pointermove", function (event) {
-  if (!drawing) return;
+  if (!drawing || weAreInsideThePaper()) return;
   var spot = findSpot(event);
   pen.lineTo(spot.x, spot.y);
   pen.stroke();
@@ -138,6 +145,7 @@ board.addEventListener("pointerleave", function () { drawing = false; });
 // ---------- The buttons at the bottom ----------
 
 document.getElementById("undo-button").addEventListener("click", function () {
+  if (weAreInsideThePaper()) return;
   var previous = pictureHistory.pop();
   if (!previous) return;
   var picture = new Image();
@@ -149,6 +157,7 @@ document.getElementById("undo-button").addEventListener("click", function () {
 });
 
 document.getElementById("clear-button").addEventListener("click", function () {
+  if (weAreInsideThePaper()) return;
   rememberPicture();
   startWithBlankPaper();
 });
@@ -229,6 +238,7 @@ function showAlbum() {
 }
 
 function putBackOnThePaper(address) {
+  if (weAreInsideThePaper()) return;
   rememberPicture();
   var picture = new Image();
   picture.onload = function () {
@@ -240,6 +250,7 @@ function putBackOnThePaper(address) {
 }
 
 document.getElementById("save-button").addEventListener("click", function () {
+  if (weAreInsideThePaper()) return;
   if (album.length >= HOW_MANY_FIT_IN_THE_ALBUM) {
     albumMessage.textContent = "Your album is full! Throw one away with 🗑️ to make room.";
     return;
