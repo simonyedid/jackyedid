@@ -1041,7 +1041,9 @@ footer {
 }
 
 /* Leave room at the bottom so the bar never covers the last card. */
-body { padding-bottom: 5.5rem; }
+/* Leave room for the music bar so nothing hides underneath it. On a
+   phone the bar goes onto two rows, so this has to clear both. */
+body { padding-bottom: 9rem; }
 
 /* ---------- The Spotify panel ---------- */
 

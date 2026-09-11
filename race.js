@@ -45,8 +45,9 @@ var SPEEDS_UP_BY = 0.4;     // how much faster after every car you pass
 var HOW_OFTEN_A_CAR = 74;   // a new car every this many frames (smaller = harder)
 var STEERING_SPEED = 10;    // how quickly your car moves left and right
 
-// Crash and the whole race starts over again, back on the street.
-var CRASH_LASTS = 90;              // frames the crash is shown before you restart
+// Crash and the bang blasts you all the way into outer space, and the
+// race starts over again up there.
+var CRASH_LASTS = 110;             // frames the crash is shown before you restart
 
 // Get past this many cars in outer space and you fly home to Earth.
 var THE_WAY_HOME_STARTS_AT = 50;
@@ -83,6 +84,8 @@ var endingAt = 0;                 // when the landing starts
 var showingEarth = false;         // true once the landing has begun
 var exploring = false;            // driving about the desert afterwards
 var restartingAt = 0;             // when the crashed race starts over
+var zoneBoost = 0;                // a crash starts you over in outer space
+var blastedIntoSpace = false;     // true when the bang sent you up there
 var station = null;               // the big rocket station hidden in the sand
 var goingToMars = false;          // true once you go in the station door
 var marsAt = 0;                   // the frame the countdown started
@@ -133,13 +136,24 @@ var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 try { best = Number(localStorage.getItem("jack-race-best")) || 0; }
 catch (whoops) { best = 0; }
 
-// Which place are you in? The last one you have reached enough cars for.
+// How far along the journey you are. It is the cars you have passed,
+// plus a jump forward if a crash blasted you into space.
+function howFar() {
+  return score + zoneBoost;
+}
+
+// Which place are you in? The last one you have got far enough for.
 function whichZone() {
   var found = ZONES[0];
   ZONES.forEach(function (place) {
-    if (score >= place.from) found = place;
+    if (howFar() >= place.from) found = place;
   });
   return found;
+}
+
+// Outer space is the last place in the list.
+function outerSpace() {
+  return ZONES[ZONES.length - 1];
 }
 
 function checkForANewPlace() {
@@ -150,7 +164,7 @@ function checkForANewPlace() {
   }
 }
 
-function newRace() {
+function newRace(startInSpace) {
   ON_THE_GROUND = road.height - 110;
   UP_IN_THE_AIR = road.height - 200;
   flyingNow = 0;
@@ -161,8 +175,10 @@ function newRace() {
   frame = 0;
   crashed = false;
   racing = true;
-  zone = ZONES[0];
-  bannerUntil = 0;
+  // A crash blasts you into outer space, so that is where you start again.
+  zoneBoost = startInSpace ? outerSpace().from : 0;
+  zone = whichZone();
+  bannerUntil = startInSpace ? frame + 130 : 0;
   transformed = false;
   showingEarth = false;
   exploring = false;
@@ -173,6 +189,7 @@ function newRace() {
   desertCar = -1;
   restartingAt = 0;
   station = null;
+  blastedIntoSpace = !!startInSpace;
   goingToMars = false;
   goingDown = false;
   inTheCave = false;
@@ -372,8 +389,10 @@ function drawScore() {
     pen.textAlign = "center";
     pen.fillStyle = "#ffffff";
     pen.font = "bold 17px 'Trebuchet MS', sans-serif";
-    pen.fillText(transformed && zone.flying ? "YOU ARE NOW A" : "WELCOME TO",
-                 road.width / 2, road.height / 2 - 12);
+    var topLine = "WELCOME TO";
+    if (transformed && zone.flying) topLine = "YOU ARE NOW A";
+    else if (blastedIntoSpace && zone.flying) topLine = "THE BANG SENT YOU TO";
+    pen.fillText(topLine, road.width / 2, road.height / 2 - 12);
     pen.font = "bold 27px 'Trebuchet MS', sans-serif";
     pen.fillText(transformed && zone.flying ? "\uD83D\uDE80 ROCKET!" : zone.name,
                  road.width / 2, road.height / 2 + 22);
@@ -450,7 +469,7 @@ function moveEverything() {
       checkForANewPlace();
 
       // Right out in space, that is the end of the race - time to fly home.
-      if (zone.flying && score >= THE_WAY_HOME_STARTS_AT) {
+      if (zone.flying && howFar() >= THE_WAY_HOME_STARTS_AT) {
         flyHome();
         return;
       }
@@ -487,6 +506,45 @@ function flyHome() {
 }
 
 // ---------- Coming home ----------
+
+// The crash, and the bang blasting you up into outer space.
+function drawTheBang() {
+  var howLongFor = frame - (restartingAt - CRASH_LASTS);
+  var howFarUp = Math.max(0, (howLongFor / CRASH_LASTS - 0.35)) / 0.65;
+
+  // The road you crashed on, going dark as you leave it behind.
+  drawRoad();
+  for (var i = 0; i < otherCars.length; i++) drawCar(otherCars[i], otherCars[i].picture);
+
+  if (howFarUp > 0) {
+    pen.fillStyle = "rgba(5, 6, 15, " + Math.min(1, howFarUp * 1.4) + ")";
+    pen.fillRect(0, 0, road.width, road.height);
+    pen.globalAlpha = Math.min(1, howFarUp * 1.4);
+    drawStars();
+    pen.globalAlpha = 1;
+  }
+
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+
+  // Your car, spinning up off the screen and into the stars.
+  pen.save();
+  pen.translate(myCar.x + CAR_WIDTH / 2, myCar.y + CAR_HEIGHT / 2 - howFarUp * (road.height * 0.8));
+  pen.rotate(howFarUp * 9);
+  pen.font = "44px serif";
+  pen.fillText(transformed ? "\uD83D\uDE80" : MY_CAR, 0, 0);
+  pen.restore();
+
+  // The bang.
+  if (howFarUp < 0.5) {
+    pen.font = (70 - howFarUp * 60) + "px serif";
+    pen.fillText("\uD83D\uDCA5", myCar.x + CAR_WIDTH / 2, myCar.y + CAR_HEIGHT / 2);
+  }
+
+  drawScore();
+  drawMessage("\uD83D\uDCA5 Crash!",
+              howFarUp > 0.25 ? "Blasted into OUTER SPACE!" : "You passed " + score + " cars");
+}
 
 // A desert on Earth, with the sun and some dunes.
 function drawDesert() {
@@ -1405,12 +1463,17 @@ exploreButton.addEventListener("click", startExploring);
 function everyFrame() {
   if (racing) moveEverything();
 
-  // Crash and, after a moment to see it, the whole race starts over again.
+  // Crash and the bang blasts you into outer space, where the whole race
+  // starts over again.
   if (crashed) {
     frame++;
     if (frame > restartingAt) {
-      newRace();
+      newRace(true);
       goButton.hidden = true;
+    } else {
+      drawTheBang();
+      requestAnimationFrame(everyFrame);
+      return;
     }
   }
 
@@ -1454,8 +1517,7 @@ function everyFrame() {
   if (myCar) drawCar(myCar, MY_CAR, true);
   drawScore();
 
-  if (crashed) drawMessage("💥 Crash!", "Starting over again...");
-  else if (!racing) drawMessage("Ready?", "Press Start racing");
+  if (!racing) drawMessage("Ready?", "Press Start racing");
 
   requestAnimationFrame(everyFrame);
 }
