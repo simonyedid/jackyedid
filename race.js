@@ -51,6 +51,8 @@ var pen = road.getContext("2d");
 var goButton = document.getElementById("go-button");
 var transformButton = document.getElementById("transform-button");
 var exploreButton = document.getElementById("explore-button");
+var openBoxButton = document.getElementById("open-box-button");
+var desertCarButton = document.getElementById("desert-car-button");
 
 var siteColors = getComputedStyle(document.documentElement);
 var BLUE = siteColors.getPropertyValue("--accent").trim();
@@ -71,13 +73,42 @@ var transformed = false;          // has the car turned into a rocket?
 var endingAt = 0;                 // when the landing starts
 var showingEarth = false;         // true once the landing has begun
 var exploring = false;            // driving about the desert afterwards
-var holdingUp = false;
-var holdingDown = false;
+// ---------- WHAT IS BURIED IN THE DESERT ----------
+// Dig in the sand and these are what you can turn up. The mystery
+// dumpling box is the one you are really after.
+var BURIED = [
+  { picture: "\uD83D\uDC8E", name: "a diamond" },
+  { picture: "\uD83C\uDFFA", name: "an old pot" },
+  { picture: "\uD83E\uDDB4", name: "a dinosaur bone" },
+  { picture: "\uD83E\uDE99", name: "a gold coin" },
+  { picture: "\uD83D\uDDDD\uFE0F", name: "a rusty key" },
+  { picture: "\uD83D\uDCE6", name: "the MYSTERY DUMPLING BOX", isTheBox: true }
+];
 
-// The things hidden in the desert to go and find.
-var DESERT_THINGS = ["\uD83C\uDF35", "\uD83D\uDC8E", "\uD83C\uDFFA", "\uD83E\uDD98", "\uD83C\uDFDD\uFE0F"];
+// What can be inside the box.
+var DUMPLINGS = [
+  { name: "GOLD", colour: "gold" },
+  { name: "SILVER", colour: "silver" },
+  { name: "RED", colour: "red" }
+];
+
 var toFind = [];
-var explorer = { x: 0, y: 0 };
+var holes = [];                  // every hole you have dug
+var boxFound = false;
+var whatWasInTheBox = null;
+
+// ---------- THE DESERT CAR ----------
+// Once you have landed, the rocket can turn into a desert car.
+// Press again to change its colour.
+// These numbers were picked by rendering the car at lots of different
+// hue-rotate angles and looking at which ones really came out green and
+// orange. 150 looked red, so orange needed 175.
+var DESERT_CAR_COLOURS = [
+  { name: "green",  look: "hue-rotate(-100deg) saturate(1.6)" },
+  { name: "blue",   look: "" },
+  { name: "orange", look: "hue-rotate(175deg) saturate(1.7) brightness(1.05)" }
+];
+var desertCar = -1;              // -1 means still a rocket
 var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 
 // Remember the best score between visits, if the browser lets us.
@@ -118,8 +149,14 @@ function newRace() {
   showingEarth = false;
   exploring = false;
   endingAt = 0;
+  holes = [];
+  boxFound = false;
+  whatWasInTheBox = null;
+  desertCar = -1;
   transformButton.hidden = true;
   exploreButton.hidden = true;
+  openBoxButton.hidden = true;
+  desertCarButton.hidden = true;
 }
 
 // ---------- Drawing ----------
@@ -429,24 +466,102 @@ function drawDesert() {
   }
 }
 
-// The rocket coming down out of the sky onto the sand.
-function drawLanding() {
+// ---------- The journey home ----------
+// It happens in three parts: you fly through space towards the Earth,
+// the rocket goes into it, and then you come down and land in the desert.
+
+var FLYING_TO_EARTH = 130;     // frames spent flying through space
+var GOING_IN = 45;             // frames spent diving into the Earth
+var COMING_DOWN = 190;         // frames spent floating down into the desert
+
+function drawStars() {
+  pen.fillStyle = "#ffffff";
+  for (var i = 0; i < 46; i++) {
+    var starX = (i * 137) % road.width;
+    var starY = (i * 211) % road.height;
+    pen.beginPath();
+    pen.arc(starX, starY, 1.5, 0, Math.PI * 2);
+    pen.fill();
+  }
+}
+
+// The rocket, with its flames, drawn wherever you like and however big.
+function drawRocket(x, y, howBig, flameSize) {
+  pen.textAlign = "center";
+  pen.textBaseline = "middle";
+  if (flameSize > 0) {
+    pen.font = (flameSize + Math.sin(frame * 0.5) * 5) + "px serif";
+    pen.fillText("\uD83D\uDD25", x, y + howBig * 0.75);
+  }
+  pen.font = howBig + "px serif";
+  pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F", x, y);
+}
+
+function drawJourneyHome() {
   var howLongFor = frame - endingAt;
-  var comingDown = Math.min(1, howLongFor / 120);
+
+  // ---- Part 1: flying through space towards the Earth ----
+  if (howLongFor < FLYING_TO_EARTH) {
+    var howFar = howLongFor / FLYING_TO_EARTH;
+
+    pen.fillStyle = "#05060f";
+    pen.fillRect(0, 0, road.width, road.height);
+    drawStars();
+
+    // The Earth, small and far away, growing as you get closer.
+    var earthSize = 40 + howFar * 150;
+    pen.font = earthSize + "px serif";
+    pen.textAlign = "center";
+    pen.textBaseline = "middle";
+    pen.fillText("\uD83C\uDF0D", road.width / 2, road.height * 0.32);
+
+    // The rocket flying up towards it.
+    drawRocket(road.width / 2, road.height * 0.82 - howFar * 120, 52, 30);
+
+    pen.fillStyle = "#ffffff";
+    pen.textBaseline = "alphabetic";
+    pen.font = "bold 19px 'Trebuchet MS', sans-serif";
+    pen.fillText("Flying home to Earth...", road.width / 2, road.height - 40);
+    return;
+  }
+
+  // ---- Part 2: going into the Earth ----
+  if (howLongFor < FLYING_TO_EARTH + GOING_IN) {
+    var howDeep = (howLongFor - FLYING_TO_EARTH) / GOING_IN;
+
+    pen.fillStyle = "#05060f";
+    pen.fillRect(0, 0, road.width, road.height);
+    drawStars();
+
+    pen.font = "190px serif";
+    pen.textAlign = "center";
+    pen.textBaseline = "middle";
+    pen.fillText("\uD83C\uDF0D", road.width / 2, road.height * 0.32);
+
+    // The rocket shrinks away into the planet.
+    drawRocket(road.width / 2,
+               road.height * 0.7 - howDeep * (road.height * 0.38),
+               52 - howDeep * 44,
+               26 - howDeep * 26);
+
+    // Everything goes white as it enters.
+    if (howDeep > 0.75) {
+      pen.fillStyle = "rgba(255, 255, 255, " + ((howDeep - 0.75) * 4) + ")";
+      pen.fillRect(0, 0, road.width, road.height);
+    }
+    return;
+  }
+
+  // ---- Part 3: coming down into the desert ----
+  var sinceEntering = howLongFor - FLYING_TO_EARTH - GOING_IN;
+  var comingDown = Math.min(1, sinceEntering / COMING_DOWN);
 
   drawDesert();
 
   var landsAt = road.height * 0.72;
   var rocketY = -60 + (landsAt + 60) * comingDown;
 
-  pen.textAlign = "center";
-  pen.textBaseline = "middle";
-
-  if (comingDown < 1) {
-    // Flames underneath while it is still coming down.
-    pen.font = (30 + Math.sin(frame * 0.5) * 6) + "px serif";
-    pen.fillText("\uD83D\uDD25", road.width / 2, rocketY + 42);
-  } else {
+  if (comingDown >= 1) {
     // A puff of dust once it has touched down.
     pen.fillStyle = "rgba(217, 178, 115, 0.85)";
     pen.beginPath();
@@ -454,19 +569,38 @@ function drawLanding() {
     pen.fill();
   }
 
-  pen.font = "56px serif";
-  pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F", road.width / 2, rocketY);
+  // A parachute opens near the top and carries it down, then lets go
+  // just before it lands.
+  if (comingDown > 0.12 && comingDown < 0.94) {
+    pen.font = "62px serif";
+    pen.textAlign = "center";
+    pen.textBaseline = "middle";
+    // It sways gently from side to side as it falls.
+    pen.fillText("\uD83E\uDE82",
+                 road.width / 2 + Math.sin(frame * 0.06) * 14,
+                 rocketY - 56);
+  }
 
-  if (howLongFor > 140) {
+  // The rockets only fire before the parachute opens.
+  drawRocket(road.width / 2, rocketY, 56, comingDown < 0.12 ? 30 : 0);
+
+  // The white flash fading away, so part 2 joins onto part 3.
+  if (sinceEntering < 20) {
+    pen.fillStyle = "rgba(255, 255, 255, " + (1 - sinceEntering / 20) + ")";
+    pen.fillRect(0, 0, road.width, road.height);
+  }
+
+  if (sinceEntering > COMING_DOWN + 20) {
     pen.fillStyle = "rgba(0, 0, 0, 0.55)";
     pen.fillRect(0, road.height - 152, road.width, 122);
     pen.fillStyle = "#ffffff";
+    pen.textAlign = "center";
     pen.textBaseline = "alphabetic";
     pen.font = "bold 30px 'Trebuchet MS', sans-serif";
     pen.fillText("WELL DONE!", road.width / 2, road.height - 114);
     pen.font = "bold 17px 'Trebuchet MS', sans-serif";
     pen.fillText("You arrived at the desert.", road.width / 2, road.height - 86);
-    pen.fillText("Now you can explore!", road.width / 2, road.height - 62);
+    pen.fillText("Now you can dig and explore!", road.width / 2, road.height - 62);
     pen.fillText("You got past " + score + " cars \u00B7 Best " + best,
                  road.width / 2, road.height - 38);
 
@@ -484,40 +618,49 @@ function startExploring() {
   exploring = true;
   showingEarth = false;
   exploreButton.hidden = true;
-  goButton.hidden = true;
+  openBoxButton.hidden = true;
+  desertCarButton.hidden = false;
 
-  explorer.x = road.width / 2;
-  explorer.y = road.height * 0.72;
+  // Always leave a way back to the racing, even if you never find
+  // the box - otherwise you are stuck in the desert.
+  goButton.hidden = false;
+  goButton.textContent = "\uD83C\uDFC1 Race again";
+  desertCarButton.textContent = "\uD83D\uDE99 Transform into a desert car";
 
-  // Hide things about the sand to go and find.
-  toFind = DESERT_THINGS.map(function (picture) {
+  holes = [];
+  boxFound = false;
+  whatWasInTheBox = null;
+
+  // Bury everything in random spots under the sand.
+  toFind = BURIED.map(function (thing) {
     return {
-      picture: picture,
-      x: 40 + Math.random() * (road.width - 80),
-      y: road.height * 0.56 + Math.random() * (road.height * 0.36),
-      found: false
+      picture: thing.picture,
+      name: thing.name,
+      isTheBox: thing.isTheBox,
+      x: 45 + Math.random() * (road.width - 90),
+      y: road.height * 0.58 + Math.random() * (road.height * 0.34),
+      dugUp: false
     };
   });
 }
 
-function moveExplorer() {
-  if (holdingLeft) explorer.x -= 4;
-  if (holdingRight) explorer.x += 4;
-  if (holdingUp) explorer.y -= 4;
-  if (holdingDown) explorer.y += 4;
+// Dig a hole wherever you tapped, and see what is in it.
+function digHere(x, y) {
+  if (!exploring) return;
 
-  // Stay on the sand.
-  if (explorer.x < 24) explorer.x = 24;
-  if (explorer.x > road.width - 24) explorer.x = road.width - 24;
-  if (explorer.y < road.height * 0.52) explorer.y = road.height * 0.52;
-  if (explorer.y > road.height - 30) explorer.y = road.height - 30;
+  holes.push({ x: x, y: y });
 
-  // Drive into something and you have found it.
   toFind.forEach(function (thing) {
-    if (thing.found) return;
-    var awayX = thing.x - explorer.x;
-    var awayY = thing.y - explorer.y;
-    if (Math.sqrt(awayX * awayX + awayY * awayY) < 34) thing.found = true;
+    if (thing.dugUp) return;
+    var awayX = thing.x - x;
+    var awayY = thing.y - y;
+    if (Math.sqrt(awayX * awayX + awayY * awayY) < 46) {
+      thing.dugUp = true;
+      if (thing.isTheBox) {
+        boxFound = true;
+        openBoxButton.hidden = false;
+      }
+    }
   });
 }
 
@@ -526,39 +669,97 @@ function drawExploring() {
 
   pen.textAlign = "center";
   pen.textBaseline = "middle";
-  toFind.forEach(function (thing) {
-    pen.font = "34px serif";
-    pen.globalAlpha = thing.found ? 1 : 0.4;      // faint until you find it
-    pen.fillText(thing.picture, thing.x, thing.y);
-    pen.globalAlpha = 1;
+
+  // The holes you have dug.
+  holes.forEach(function (hole) {
+    pen.fillStyle = "#b08a4e";
+    pen.beginPath();
+    pen.ellipse(hole.x, hole.y, 24, 13, 0, 0, Math.PI * 2);
+    pen.fill();
+    pen.fillStyle = "#8a6a36";
+    pen.beginPath();
+    pen.ellipse(hole.x, hole.y + 2, 17, 9, 0, 0, Math.PI * 2);
+    pen.fill();
   });
 
-  pen.font = "44px serif";
-  pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F", explorer.x, explorer.y);
+  // Your rocket, or your desert car, parked on the sand.
+  pen.save();
+  if (desertCar >= 0) {
+    pen.filter = DESERT_CAR_COLOURS[desertCar].look || "none";
+    pen.font = "48px serif";
+    pen.fillText("\uD83D\uDE99", road.width / 2, road.height * 0.72);
+  } else {
+    pen.font = "48px serif";
+    pen.fillText(transformed ? "\uD83D\uDE80" : "\uD83C\uDFCE\uFE0F",
+                 road.width / 2, road.height * 0.72);
+  }
+  pen.restore();
 
-  var howManyFound = toFind.filter(function (t) { return t.found; }).length;
+  // Whatever you have dug up sits in its hole.
+  toFind.forEach(function (thing) {
+    if (!thing.dugUp) return;
+    pen.font = (thing.isTheBox ? 40 : 32) + "px serif";
+    pen.fillText(thing.picture, thing.x, thing.y - 6);
+  });
+
+  // What is inside the box, once it is open.
+  if (whatWasInTheBox) {
+    pen.fillStyle = "rgba(0, 0, 0, 0.62)";
+    pen.fillRect(0, road.height / 2 - 110, road.width, 210);
+
+    pen.save();
+    pen.filter = dumplingLook(whatWasInTheBox.colour);
+    pen.font = "110px serif";
+    pen.fillText("\uD83E\uDD5F", road.width / 2, road.height / 2 - 20);
+    pen.restore();
+
+    pen.fillStyle = "#ffffff";
+    pen.font = "bold 26px 'Trebuchet MS', sans-serif";
+    pen.fillText("A " + whatWasInTheBox.name + " DUMPLING!", road.width / 2, road.height / 2 + 62);
+  }
+
+  var dugUp = toFind.filter(function (t) { return t.dugUp; }).length;
 
   pen.textAlign = "left";
   pen.textBaseline = "alphabetic";
   pen.fillStyle = "#5a3a1c";
-  pen.font = "bold 20px 'Trebuchet MS', sans-serif";
-  pen.fillText("Found " + howManyFound + " of " + toFind.length, 12, 32);
+  pen.font = "bold 19px 'Trebuchet MS', sans-serif";
+  pen.fillText("Dug up " + dugUp + " of " + toFind.length, 12, 32);
   pen.font = "bold 14px 'Trebuchet MS', sans-serif";
-  pen.fillText("Drive about with the arrow keys or your finger", 12, 54);
-
-  if (howManyFound === toFind.length) {
-    pen.textAlign = "center";
-    pen.fillStyle = "rgba(0, 0, 0, 0.55)";
-    pen.fillRect(0, road.height / 2 - 40, road.width, 80);
-    pen.fillStyle = "#ffffff";
-    pen.font = "bold 25px 'Trebuchet MS', sans-serif";
-    pen.fillText("You explored it all! \uD83C\uDFC6", road.width / 2, road.height / 2 + 8);
-    if (goButton.hidden) {
-      goButton.hidden = false;
-      goButton.textContent = "\uD83C\uDFC1 Race again";
-    }
+  pen.fillText(boxFound ? "You found the mystery box! Open it \u2193"
+                        : "Tap the sand anywhere to dig", 12, 54);
+  if (desertCar >= 0) {
+    pen.fillText("Driving the " + DESERT_CAR_COLOURS[desertCar].name +
+                 " desert car \uD83D\uDE99", 12, 74);
   }
+
 }
+
+// Gold, silver or red - done by tinting the dumpling.
+function dumplingLook(colour) {
+  if (colour === "gold") {
+    return "sepia(1) saturate(5) hue-rotate(-18deg) brightness(1.12) " +
+           "drop-shadow(0 0 22px rgba(255,200,60,0.95))";
+  }
+  if (colour === "silver") {
+    return "grayscale(1) brightness(1.35) contrast(1.1) " +
+           "drop-shadow(0 0 22px rgba(230,230,240,0.95))";
+  }
+  return "sepia(1) saturate(9) hue-rotate(-50deg) brightness(0.95) " +
+         "drop-shadow(0 0 22px rgba(230,60,60,0.95))";
+}
+
+desertCarButton.addEventListener("click", function () {
+  desertCar = (desertCar + 1) % DESERT_CAR_COLOURS.length;
+  desertCarButton.textContent = "\uD83C\uDFA8 Make it " +
+    DESERT_CAR_COLOURS[(desertCar + 1) % DESERT_CAR_COLOURS.length].name;
+});
+
+openBoxButton.addEventListener("click", function () {
+  if (!boxFound || whatWasInTheBox) return;
+  whatWasInTheBox = DUMPLINGS[Math.floor(Math.random() * DUMPLINGS.length)];
+  openBoxButton.hidden = true;
+});
 
 exploreButton.addEventListener("click", startExploring);
 
@@ -575,7 +776,6 @@ function everyFrame() {
 
   if (exploring) {
     frame++;
-    moveExplorer();
     drawExploring();
     requestAnimationFrame(everyFrame);
     return;
@@ -583,7 +783,7 @@ function everyFrame() {
 
   if (showingEarth) {
     frame++;
-    drawLanding();
+    drawJourneyHome();
     requestAnimationFrame(everyFrame);
     return;
   }
@@ -607,15 +807,10 @@ var holdingRight = false;
 document.addEventListener("keydown", function (event) {
   if (event.key === "ArrowLeft") { holdingLeft = true; event.preventDefault(); }
   if (event.key === "ArrowRight") { holdingRight = true; event.preventDefault(); }
-  // Up and down are only used for driving about the desert.
-  if (event.key === "ArrowUp") { holdingUp = true; event.preventDefault(); }
-  if (event.key === "ArrowDown") { holdingDown = true; event.preventDefault(); }
 });
 document.addEventListener("keyup", function (event) {
   if (event.key === "ArrowLeft") holdingLeft = false;
   if (event.key === "ArrowRight") holdingRight = false;
-  if (event.key === "ArrowUp") holdingUp = false;
-  if (event.key === "ArrowDown") holdingDown = false;
 });
 
 // Slide a finger or the mouse across the road to steer.
@@ -627,16 +822,18 @@ function steerTo(clientX) {
 }
 
 road.addEventListener("pointermove", function (event) {
-  if (exploring) {
-    // In the desert you can go any direction, so follow the finger.
-    var box = road.getBoundingClientRect();
-    explorer.x = (event.clientX - box.left) * (road.width / box.width);
-    explorer.y = (event.clientY - box.top) * (road.height / box.height);
-    return;
-  }
+  if (exploring) return;          // in the desert you tap to dig instead
   steerTo(event.clientX);
 });
 road.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
+
+// In the desert, tapping anywhere digs a hole there.
+road.addEventListener("pointerdown", function (event) {
+  if (!exploring) return;
+  var box = road.getBoundingClientRect();
+  digHere((event.clientX - box.left) * (road.width / box.width),
+          (event.clientY - box.top) * (road.height / box.height));
+});
 
 
 transformButton.addEventListener("click", function () {
