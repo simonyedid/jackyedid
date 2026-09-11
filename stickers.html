@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Penalty Shootout — Jack Yedid</title>
-  <meta name="description" content="Take penalties on Jack Yedid's website.">
+  <title>My Sticker Book — Jack Yedid</title>
+  <meta name="description" content="Jack Yedid's sticker book and prizes.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
   <link rel="stylesheet" href="style.css?v=30">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
@@ -12,22 +12,27 @@
 <body>
 
   <header class="hero">
-    <h1>⚽ <span class="name">Penalty</span> Shootout</h1>
-    <p class="tagline">5 shots. Can you beat the keeper?</p>
+    <h1>📒 <span class="name">Sticker</span> Book</h1>
+    <p class="tagline">Every prize I have won for playing my games.</p>
   </header>
 
   <main>
 
     <section class="card">
-      <!-- The pitch gets drawn on here. Click it to shoot! -->
-      <canvas id="pitch" width="500" height="400" class="pitch"></canvas>
+      <h2>⭐ How am I doing?</h2>
+      <p class="album-message" id="progress"></p>
+      <p class="game-help" id="still-to-play"></p>
+    </section>
 
-      <p class="game-help">
-        <strong>Click</strong> or <strong>tap</strong> the spot in the goal you
-        want to hit. Aim for the corners — that is where the keeper is slowest!
-      </p>
+    <section class="card">
+      <h2>📒 My stickers</h2>
+      <!-- The stickers get stuck in here by stickers.js -->
+      <div class="sticker-page" id="sticker-page"></div>
+    </section>
 
-      <button id="kick-off-button">⚽ Start shooting</button>
+    <section class="card">
+      <h2>🧸 My toy prizes</h2>
+      <div class="sticker-page" id="toy-shelf"></div>
     </section>
 
     <p class="back-link"><a href="index.html">← Back to my website</a></p>
@@ -38,8 +43,8 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="soccer.js?v=3"></script>
   <script src="stars.js?v=1"></script>
+  <script src="stickers.js?v=1"></script>
   <script src="music.js?v=3"></script>
 </body>
 </html>

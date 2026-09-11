@@ -851,15 +851,13 @@ footer {
   margin-bottom: -0.4rem;
 }
 
-/* A wide flat triangle makes the roof. */
+/* A wide flat triangle makes the roof. The triangle is cut out of a
+   rectangle, so it can shrink to fit a phone. */
 .shop-roof {
-  width: 0;
-  height: 0;
-  margin: 0 auto;
-  border-left: 190px solid transparent;
-  border-right: 190px solid transparent;
-  border-bottom: 54px solid var(--sauce);
-  max-width: 100%;
+  width: 100%;
+  height: 54px;
+  background: var(--sauce);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .shop-sign {
@@ -1245,3 +1243,168 @@ body { padding-bottom: 5.5rem; }
   left: 1rem;
   background: rgba(255, 240, 190, 0.2);
 }
+
+/* ---------- The welcome screen ---------- */
+
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  text-align: center;
+  background: #05070c;
+}
+
+.welcome-name {
+  color: #fff8e7;
+  font-weight: bold;
+  font-size: clamp(2rem, 9vw, 4.5rem);
+  letter-spacing: 1px;
+  text-shadow: 0 0 30px rgba(255, 240, 190, 0.6);
+}
+
+.welcome-line {
+  color: rgba(255, 248, 231, 0.75);
+  font-size: clamp(1rem, 3.4vw, 1.3rem);
+  margin: 0;
+}
+
+.get-started {
+  margin-top: 1.5rem;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  padding: 0.8rem 2rem;
+  background: var(--accent);
+  color: #fff;
+  border: 4px solid #fff8e7;
+  border-radius: 16px;
+}
+
+.get-started:hover { transform: translateY(-3px); }
+
+/* ---------- The star strip along the top ---------- */
+
+.star-strip {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.45rem 1rem;
+  background: var(--ink);
+  border-bottom: 4px solid var(--cheese);
+}
+
+.star-row { font-size: 1.2rem; letter-spacing: 2px; }
+
+.star-words {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.star-book-link {
+  margin-left: auto;
+  color: var(--cheese);
+  font-weight: bold;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* On a narrow phone the words give way before the stars do. */
+@media (max-width: 430px) {
+  .star-words { display: none; }
+}
+
+/* A little cheer when a star is won. */
+@keyframes star-cheer {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+}
+
+.star-strip.just-won { animation: star-cheer 0.5s ease-out; }
+
+/* Leave room at the top so the strip never covers anything. */
+body { padding-top: 3rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .star-strip.just-won { animation: none; }
+}
+
+/* ---------- Choosing a prize ---------- */
+
+.prize-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(5, 7, 12, 0.82);
+}
+
+.prize-inside {
+  max-width: 520px;
+  max-height: 86vh;
+  overflow-y: auto;
+  text-align: center;
+  background: var(--card);
+  border: 5px solid var(--ink);
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+
+.prize-inside h2 { margin-top: 0; }
+.prize-inside h3 { margin-bottom: 0.5rem; }
+
+.prize-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.prize-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 104px;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+}
+
+.prize-button:hover { background: var(--cheese); }
+.prize-picture { font-size: 2.4rem; line-height: 1.1; }
+
+/* ---------- The sticker book pages ---------- */
+
+.sticker-page {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.9rem 0.5rem;
+  background: var(--cheese);
+  border: 3px dashed var(--ink);
+  border-radius: 16px;
+}
+
+.sticker-picture { font-size: 2.6rem; line-height: 1.1; }
+.sticker-name { font-weight: bold; font-size: 0.95rem; }
