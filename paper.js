@@ -382,7 +382,7 @@ var PLACES = [
 
 var intoThePaperButton = document.getElementById("into-the-paper");
 var placeBox = document.getElementById("page-writing");     // what you say it is
-var placePicks = document.getElementById("place-picks");
+var placeWord = document.getElementById("paper-word");
 var otherPaperButtons = ["undo-button", "clear-button", "save-button"];
 
 var insideThePaper = false;   // true from the moment the portal opens
@@ -557,15 +557,22 @@ function cutOutTheDrawing() {
   return cut;
 }
 
-// Is there actually anything on the paper?
-function somethingIsDrawn(cut) {
-  var pixels = cut.getContext("2d").getImageData(0, 0, cut.width, cut.height).data;
-  var painted = 0;
-  for (var i = 3; i < pixels.length; i += 4 * 11) {
-    if (pixels[i] > 20) painted++;
-    if (painted > 30) return true;
-  }
-  return false;
+// Put what you wrote onto the copy of your picture, so your writing gets
+// pulled into the portal along with everything else you drew.
+function writeTheWordOn(cut, words) {
+  var cutPen = cut.getContext("2d");
+  cutPen.fillStyle = currentColor === "#ffffff" ? "#1f2933" : currentColor;
+  cutPen.textAlign = "center";
+  cutPen.textBaseline = "middle";
+
+  // Shrink the writing until it fits across the paper.
+  var size = 62;
+  do {
+    cutPen.font = "bold " + size + "px 'Comic Sans MS', 'Chalkboard SE', 'Trebuchet MS', sans-serif";
+    size -= 4;
+  } while (size > 18 && cutPen.measureText(words).width > cut.width * 0.9);
+
+  cutPen.fillText(words, cut.width / 2, cut.height * 0.1);
 }
 
 // Which of your colors did you use the most?
@@ -664,6 +671,82 @@ function yourOwnPlace(whatYouCalledIt) {
   };
 }
 
+// ---------- PORTAL MUSIC ----------
+// Made out of beeps right here in the browser - there is no music file to
+// load. A twinkly ladder of notes going up while the portal opens, a
+// whoosh as you go through, and a chord when you land.
+
+var LADDER = [392, 494, 587, 659, 784, 988, 1175, 1319, 1568];
+var ARRIVING_CHORD = [523, 659, 784, 1047];
+var HOW_LOUD = 0.16;
+
+var musicBox = null;
+
+function portalMusic() {
+  try {
+    if (!musicBox) musicBox = new (window.AudioContext || window.webkitAudioContext)();
+    if (musicBox.state === "suspended") musicBox.resume();
+  } catch (whoops) {
+    return;               // this browser will not make sounds, so never mind
+  }
+
+  var startAt = musicBox.currentTime + 0.05;
+
+  LADDER.forEach(function (note, step) {
+    twinkle(note, startAt + step * 0.16, 0.5, HOW_LOUD);
+    if (step % 3 === 0) twinkle(note * 2, startAt + step * 0.16 + 0.07, 0.35, HOW_LOUD * 0.6);
+  });
+
+  whoosh(startAt + 1.65, 1.1);
+
+  ARRIVING_CHORD.forEach(function (note, i) {
+    twinkle(note, startAt + 2.75 + i * 0.05, 1.3, HOW_LOUD * 0.9);
+  });
+}
+
+// One clear note that fades away.
+function twinkle(note, when, howLong, loudness) {
+  var sound = musicBox.createOscillator();
+  var volume = musicBox.createGain();
+
+  sound.type = "sine";
+  sound.frequency.value = note;
+
+  volume.gain.setValueAtTime(0, when);
+  volume.gain.linearRampToValueAtTime(loudness, when + 0.02);
+  volume.gain.exponentialRampToValueAtTime(0.0001, when + howLong);
+
+  sound.connect(volume);
+  volume.connect(musicBox.destination);
+  sound.start(when);
+  sound.stop(when + howLong + 0.05);
+}
+
+// The swooshing sound of going through.
+function whoosh(when, howLong) {
+  var sound = musicBox.createOscillator();
+  var muffler = musicBox.createBiquadFilter();
+  var volume = musicBox.createGain();
+
+  sound.type = "sawtooth";
+  sound.frequency.setValueAtTime(90, when);
+  sound.frequency.exponentialRampToValueAtTime(900, when + howLong);
+
+  muffler.type = "lowpass";
+  muffler.frequency.setValueAtTime(300, when);
+  muffler.frequency.exponentialRampToValueAtTime(2600, when + howLong);
+
+  volume.gain.setValueAtTime(0, when);
+  volume.gain.linearRampToValueAtTime(HOW_LOUD * 0.7, when + howLong * 0.5);
+  volume.gain.exponentialRampToValueAtTime(0.0001, when + howLong);
+
+  sound.connect(muffler);
+  muffler.connect(volume);
+  volume.connect(musicBox.destination);
+  sound.start(when);
+  sound.stop(when + howLong + 0.05);
+}
+
 // ---------- Going in and coming out ----------
 
 function goIntoThePaper() {
@@ -675,7 +758,8 @@ function goIntoThePaper() {
   }
 
   var cut = cutOutTheDrawing();
-  theDrawing = somethingIsDrawn(cut) ? cut : null;
+  writeTheWordOn(cut, whatItIs);          // the word goes in with the picture
+  theDrawing = cut;
   theColors = colorsInTheDrawing(cut);
   whereYouWent = findThePlace(whatItIs) || yourOwnPlace(whatItIs);
 
@@ -685,6 +769,9 @@ function goIntoThePaper() {
   insideThePaper = true;
   arrived = false;
   paperFrame = 0;
+
+  portalMusic();
+  showTheWordOnThePaper();          // the word is in the portal now, not on top
 
   intoThePaperButton.textContent = "🚪 Come back out";
   otherPaperButtons.forEach(function (name) {
@@ -696,6 +783,7 @@ function goIntoThePaper() {
 
 function comeBackOut() {
   insideThePaper = false;
+  showTheWordOnThePaper();          // your writing comes back with the paper
   intoThePaperButton.textContent = "🌀 Go into the paper";
   otherPaperButtons.forEach(function (name) {
     document.getElementById(name).hidden = false;
@@ -862,20 +950,16 @@ function everyPaperFrame() {
 
 // ---------- The buttons ----------
 
-// A picture button for every place, so you can tap one instead of
-// writing it. Tapping it fills in the word and takes you straight there.
-PLACES.forEach(function (place) {
-  var button = document.createElement("button");
-  button.type = "button";
-  button.className = "picker-button";
-  button.textContent = place.picture + " " + place.name.toLowerCase();
-  button.addEventListener("click", function () {
-    if (insideThePaper) return;
-    placeBox.value = place.name.toLowerCase();
-    goIntoThePaper();
-  });
-  placePicks.appendChild(button);
-});
+// Everything you type or say goes onto the paper, in the color you are
+// drawing with, so you really are writing on your drawing board.
+function showTheWordOnThePaper() {
+  placeWord.textContent = insideThePaper ? "" : placeBox.value;
+  // White would be invisible on white paper, so write that one in black.
+  placeWord.style.color = currentColor === "#ffffff" ? "#1f2933" : currentColor;
+}
+
+placeBox.addEventListener("input", showTheWordOnThePaper);
+colorButtonsBox.addEventListener("click", showTheWordOnThePaper);
 
 intoThePaperButton.addEventListener("click", function () {
   if (insideThePaper) comeBackOut();

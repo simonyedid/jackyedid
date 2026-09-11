@@ -6,7 +6,7 @@
   <title>Drawing Board — Jack Yedid</title>
   <meta name="description" content="Draw a picture on Jack Yedid's website.">
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=45">
+  <link rel="stylesheet" href="style.css?v=46">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -20,7 +20,11 @@
 
     <section class="card">
       <!-- This white rectangle is what you draw on. -->
-      <canvas id="board" width="600" height="450" class="board"></canvas>
+      <div class="paper-holder">
+        <canvas id="board" width="600" height="450" class="board"></canvas>
+        <!-- Whatever you write with the keyboard shows up here, on your paper. -->
+        <div class="paper-word" id="paper-word"></div>
+      </div>
     </section>
 
     <section class="card">
@@ -42,15 +46,14 @@
 
     <section class="card">
       <h2>🌀 Go into the paper</h2>
-      <p>Draw a place, then say or write what it is. A magic portal opens
-         in your picture and takes you there!</p>
+      <p>Draw the place you are going to, and write it on your paper with
+         this keyboard — or tap 🎤 and just say it. Then a magic portal
+         opens and takes you there!</p>
 
-      <!-- keyboard.js writes into whatever has this id. -->
-      <input id="page-writing" class="title-box" autocomplete="off"
-             placeholder="rainbow, New York, the beach...">
-
-      <!-- A button for every place. paper.js makes them. -->
-      <div class="picker" id="place-picks"></div>
+      <!-- The word goes in here out of sight, and onto the paper where
+           you can see it. keyboard.js writes into whatever has this id. -->
+      <input id="page-writing" class="writing-hidden" autocomplete="off"
+             aria-label="Where are you going?">
 
       <!-- The keyboard with the microphone key on it. -->
       <div class="keyboard" id="keyboard"></div>
@@ -75,7 +78,7 @@
 
   <script src="draw.js?v=5"></script>
   <script src="keyboard.js?v=4"></script>
-  <script src="paper.js?v=3"></script>
+  <script src="paper.js?v=4"></script>
   <script src="stars.js?v=4"></script>
   <script src="music.js?v=3"></script>
 </body>

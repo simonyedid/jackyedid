@@ -255,11 +255,34 @@ footer {
   margin: 1rem 0;
 }
 
-/* The place buttons on the Drawing Board. Small enough that two or three
-   fit on a line on a phone, instead of one long list. */
-#place-picks .picker-button {
-  padding: 0.4rem 0.7rem;
-  font-size: 0.95rem;
+/* ---------- Writing on the drawing board ---------- */
+
+/* The word sits on top of the paper, so it looks like it is written
+   on your picture. */
+.paper-holder { position: relative; }
+
+.paper-word {
+  position: absolute;
+  top: 4%;
+  left: 4%;
+  right: 4%;
+  text-align: center;
+  font-size: clamp(1.5rem, 7vw, 2.6rem);
+  font-weight: bold;
+  line-height: 1.1;
+  word-break: break-word;
+  pointer-events: none;     /* you can still draw underneath it */
+}
+
+/* The box the letters really go into. It is out of the way, because the
+   word you are writing is shown on the paper instead. */
+.writing-hidden {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  padding: 0;
 }
 
 /* ---------- The Penalty Shootout page ---------- */
