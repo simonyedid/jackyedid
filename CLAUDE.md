@@ -107,3 +107,16 @@ matters:
   and it only plays 30 second previews without a Premium login.
 
 Don't quietly widen that: no analytics, no other third-party embeds.
+
+## The microphone key
+
+The sticker book's keyboard has a microphone key that types what Jack
+says, built on the browser's own SpeechRecognition. **This is the one
+thing on the site that sends something off the device**: the browser
+hands the audio to its vendor's service (Apple on Safari, Google on
+Chrome) to turn into words. There is no way to do browser dictation
+without that, and Jack asked for it after being told.
+
+It only appears where the browser supports it, and it is switched off
+with an explanation where it doesn't. Nothing is recorded, stored or sent
+anywhere by this site itself.

@@ -1780,3 +1780,33 @@ body { padding-top: 3rem; }
 .page-slot.in-shadow {
   border: 3px dashed rgba(31, 41, 51, 0.3);
 }
+
+/* The microphone key, and what it says back. */
+.key-mic { background: var(--accent); color: #fff; }
+
+.key-mic:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* While it is listening, the key glows and pulses. */
+.key-mic.listening {
+  background: #e63946;
+  animation: listening-pulse 1s ease-in-out infinite;
+}
+
+@keyframes listening-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.6); }
+  50%      { box-shadow: 0 0 0 8px rgba(230, 57, 70, 0); }
+}
+
+.mic-words {
+  font-weight: bold;
+  font-size: 0.95rem;
+  min-height: 1.3rem;
+  margin: 0.5rem 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key-mic.listening { animation: none; }
+}
