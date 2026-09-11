@@ -678,17 +678,30 @@ function yourOwnPlace(whatYouCalledIt) {
 
 var LADDER = [392, 494, 587, 659, 784, 988, 1175, 1319, 1568];
 var ARRIVING_CHORD = [523, 659, 784, 1047];
-var HOW_LOUD = 0.16;
+var HOW_LOUD = 0.34;      // turn this up if you want it louder
 
 var musicBox = null;
 
-function portalMusic() {
+// Get the sound ready. Phones only let a page make a noise after you have
+// touched it, so this is called the first time you touch anything.
+function wakeUpTheMusic() {
   try {
     if (!musicBox) musicBox = new (window.AudioContext || window.webkitAudioContext)();
-    if (musicBox.state === "suspended") musicBox.resume();
+    if (musicBox.state === "suspended" && musicBox.resume) {
+      var waking = musicBox.resume();
+      if (waking && waking.catch) waking.catch(function () {});
+    }
+    return true;
   } catch (whoops) {
-    return;               // this browser will not make sounds, so never mind
+    return false;         // this browser will not make sounds, so never mind
   }
+}
+
+// Touch the page anywhere and the sound is ready from then on.
+document.addEventListener("pointerdown", wakeUpTheMusic, { once: true });
+
+function portalMusic() {
+  if (!wakeUpTheMusic()) return;
 
   var startAt = musicBox.currentTime + 0.05;
 
@@ -709,7 +722,9 @@ function twinkle(note, when, howLong, loudness) {
   var sound = musicBox.createOscillator();
   var volume = musicBox.createGain();
 
-  sound.type = "sine";
+  // A triangle sounds brighter than a plain sine, which matters a lot on
+  // a phone speaker.
+  sound.type = "triangle";
   sound.frequency.value = note;
 
   volume.gain.setValueAtTime(0, when);
