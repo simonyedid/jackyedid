@@ -35,6 +35,7 @@ var ZONES = [
   { name: "🚀 Outer Space", from: 40,
     ground: "#05060f", road: "#2a1f4a", lines: "#4fe3e8", edges: "#9d4edd",
     scenery: "stars",
+    flying: true,                 // no ground in space - your car takes off!
     cars: ["🛸", "🚀", "👾", "☄️", "🛰️"] }
 ];
 
@@ -57,8 +58,12 @@ var ROAD_RIGHT = road.width - GRASS;
 var CAR_WIDTH = 42;
 var CAR_HEIGHT = 52;
 
+var ON_THE_GROUND = 0;      // worked out once the road size is known
+var UP_IN_THE_AIR = 0;
+
 var myCar, otherCars, speed, score, best, frame, racing, crashed;
 var zone = ZONES[0];              // where you are driving right now
+var flyingNow = 0;                // 0 on the ground, 1 fully flying
 var bannerUntil = 0;              // keep the "new place!" sign up for a bit
 
 // Remember the best score between visits, if the browser lets us.
@@ -83,7 +88,10 @@ function checkForANewPlace() {
 }
 
 function newRace() {
-  myCar = { x: road.width / 2 - CAR_WIDTH / 2, y: road.height - 110 };
+  ON_THE_GROUND = road.height - 110;
+  UP_IN_THE_AIR = road.height - 200;
+  flyingNow = 0;
+  myCar = { x: road.width / 2 - CAR_WIDTH / 2, y: ON_THE_GROUND };
   otherCars = [];
   speed = STARTING_SPEED;
   score = 0;
@@ -192,11 +200,40 @@ function sideBySide(downTo, draw) {
   draw(road.width - GRASS / 2);
 }
 
-function drawCar(car, picture) {
+function drawCar(car, picture, isMine) {
+  var middleX = car.x + CAR_WIDTH / 2;
+  var middleY = car.y + CAR_HEIGHT / 2;
+
   pen.font = "44px serif";
   pen.textAlign = "center";
   pen.textBaseline = "middle";
-  pen.fillText(picture, car.x + CAR_WIDTH / 2, car.y + CAR_HEIGHT / 2);
+
+  // Just an ordinary car on an ordinary road.
+  if (!isMine || flyingNow < 0.02) {
+    pen.fillText(picture, middleX, middleY);
+    return;
+  }
+
+  // Flying! It floats up and down, leans the way it is going, and
+  // fires its rockets out of the back.
+  var bob = Math.sin(frame * 0.09) * 7 * flyingNow;
+  var lean = 0;
+  if (holdingLeft) lean = -0.18;
+  if (holdingRight) lean = 0.18;
+
+  pen.save();
+  pen.translate(middleX, middleY + bob);
+
+  // The rocket flames, out of the back, flickering.
+  pen.font = (26 + Math.sin(frame * 0.5) * 5) + "px serif";
+  pen.globalAlpha = flyingNow;
+  pen.fillText("\uD83D\uDD25", 0, CAR_HEIGHT / 2 + 10);
+  pen.globalAlpha = 1;
+
+  pen.rotate(lean * flyingNow);
+  pen.font = "44px serif";
+  pen.fillText(picture, 0, 0);
+  pen.restore();
 }
 
 function drawScore() {
@@ -261,6 +298,12 @@ function theyCrashed(a, b) {
 function moveEverything() {
   frame++;
 
+  // In space the car lifts off and floats higher up the screen.
+  // It moves there slowly, so you see it take off.
+  var wantsToFly = zone.flying ? 1 : 0;
+  flyingNow += (wantsToFly - flyingNow) * 0.04;
+  myCar.y = ON_THE_GROUND + (UP_IN_THE_AIR - ON_THE_GROUND) * flyingNow;
+
   if (holdingLeft) myCar.x -= STEERING_SPEED;
   if (holdingRight) myCar.x += STEERING_SPEED;
 
@@ -307,7 +350,7 @@ function everyFrame() {
 
   drawRoad();
   for (var i = 0; i < otherCars.length; i++) drawCar(otherCars[i], otherCars[i].picture);
-  if (myCar) drawCar(myCar, MY_CAR);
+  if (myCar) drawCar(myCar, MY_CAR, true);
   drawScore();
 
   if (crashed) drawMessage("💥 Crash!", "You passed " + score + " cars");
@@ -347,7 +390,9 @@ goButton.addEventListener("click", function () {
 });
 
 // Show the road sitting still until the first race starts.
-myCar = { x: road.width / 2 - CAR_WIDTH / 2, y: road.height - 110 };
+ON_THE_GROUND = road.height - 110;
+UP_IN_THE_AIR = road.height - 200;
+myCar = { x: road.width / 2 - CAR_WIDTH / 2, y: ON_THE_GROUND };
 otherCars = [];
 speed = STARTING_SPEED;
 score = 0;
