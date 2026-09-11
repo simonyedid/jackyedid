@@ -9,24 +9,25 @@
        The ?v=2 on the stylesheet below does the same job for the colors:
        bump it to v=3, v=4 and so on whenever style.css changes. -->
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="style.css?v=25">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
 
   <!-- ============================================= -->
-  <!-- THE OPENING BIT. Like the start of a film:    -->
-  <!-- a countdown, then the projector, then the     -->
-  <!-- name of the website. Tap it to skip.          -->
+  <!-- THE OPENING BIT. First the projector, then    -->
+  <!-- the letters on their own, then the 3-2-1       -->
+  <!-- countdown into the website. Tap it to skip.   -->
   <!-- ============================================= -->
   <div class="intro" id="intro">
-    <div class="leader" id="leader">3</div>
-
     <div class="projector-scene" id="projector-scene">
       <div class="projector">📽️</div>
       <div class="beam"></div>
       <div class="projected">jackyedid.com</div>
     </div>
+
+    <!-- The film countdown, which comes last. -->
+    <div class="leader" id="leader" hidden>3</div>
 
     <button class="skip" id="skip">Tap to skip ⏭️</button>
   </div>
@@ -101,7 +102,7 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="intro.js?v=1"></script>
+  <script src="intro.js?v=3"></script>
   <script src="script.js?v=2"></script>
   <script src="music.js?v=3"></script>
 </body>

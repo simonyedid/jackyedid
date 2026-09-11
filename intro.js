@@ -1,20 +1,23 @@
 // ============================================================
 // THE OPENING BIT
-// Like the start of a film. A countdown, then the projector
-// switches on, then it shines the name of the website.
+// Three parts, in this order:
+//   1. the projector comes on, on its own
+//   2. the letters come up and the projector goes away
+//   3. a 3, 2, 1 film countdown runs you into the website
+//
 // The pictures and the moving are all done in style.css -
-// this file just counts, and gets out of the way at the end.
+// this file just waits, and gets out of the way at the end.
 // ============================================================
 
 // ---------- SETTINGS - change these! ----------
-var COUNT_FROM = 3;           // the numbers at the start: 3, 2, 1
-var EACH_NUMBER = 700;        // milliseconds each number stays up
-var PROJECTOR_TIME = 3600;    // how long the projector part lasts
+var PROJECTOR_PART = 3400;   // milliseconds of projector and letters
+var COUNT_FROM = 3;          // the countdown at the end: 3, 2, 1
+var EACH_NUMBER = 700;       // milliseconds each number stays up
 // ----------------------------------------------
 
 var intro = document.getElementById("intro");
-var leader = document.getElementById("leader");
 var scene = document.getElementById("projector-scene");
+var leader = document.getElementById("leader");
 var skipButton = document.getElementById("skip");
 
 var timers = [];
@@ -24,21 +27,6 @@ var finished = false;
 // website straight away instead of a film.
 var wantsLessMoving = window.matchMedia &&
                       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-function countDown(number) {
-  if (number === 0) {
-    leader.hidden = true;
-    scene.classList.add("rolling");
-    timers.push(setTimeout(theEnd, PROJECTOR_TIME));
-    return;
-  }
-  leader.textContent = number;
-  // Taking the class off and putting it back makes the wipe run again.
-  leader.classList.remove("ticking");
-  void leader.offsetWidth;
-  leader.classList.add("ticking");
-  timers.push(setTimeout(function () { countDown(number - 1); }, EACH_NUMBER));
-}
 
 function theEnd() {
   if (finished) return;
@@ -57,8 +45,30 @@ document.addEventListener("keydown", function (event) {
   if (event.key === "Escape" || event.key === " ") theEnd();
 });
 
+// ---------- The countdown at the end ----------
+
+function countDown(number) {
+  if (number === 0) {
+    theEnd();
+    return;
+  }
+  leader.textContent = number;
+  // Taking the class off and putting it back makes the wipe run again.
+  leader.classList.remove("ticking");
+  void leader.offsetWidth;
+  leader.classList.add("ticking");
+  timers.push(setTimeout(function () { countDown(number - 1); }, EACH_NUMBER));
+}
+
 if (wantsLessMoving) {
   intro.remove();
 } else {
-  countDown(COUNT_FROM);
+  scene.classList.add("rolling");
+
+  // When the projector and the letters are done, the countdown starts.
+  timers.push(setTimeout(function () {
+    scene.hidden = true;
+    leader.hidden = false;
+    countDown(COUNT_FROM);
+  }, PROJECTOR_PART));
 }

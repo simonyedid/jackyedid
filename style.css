@@ -1114,7 +1114,7 @@ body { padding-bottom: 5.5rem; }
   pointer-events: none;
 }
 
-/* ---------- The 3, 2, 1 countdown ---------- */
+/* ---------- The 3, 2, 1 countdown at the end ---------- */
 
 .leader {
   position: relative;
@@ -1168,12 +1168,18 @@ body { padding-bottom: 5.5rem; }
   font-size: min(16vmin, 90px);
   line-height: 1;
   opacity: 0;
-  animation: switch-on 0.7s ease-out forwards;
+  /* On first, then away again once the letters have arrived. */
+  animation: switch-on 0.7s ease-out forwards,
+             switch-off 0.7s 2.2s ease-in forwards;
 }
 
 @keyframes switch-on {
   from { opacity: 0; transform: translateX(-30px); }
   to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes switch-off {
+  to { opacity: 0; transform: translateX(-30px); }
 }
 
 /* The cone of light coming out of it. */
@@ -1186,18 +1192,22 @@ body { padding-bottom: 5.5rem; }
   background: linear-gradient(to right,
     rgba(255, 240, 190, 0.55), rgba(255, 240, 190, 0.06));
   clip-path: polygon(0 44%, 100% 0, 100% 100%, 0 56%);
-  animation: shine 0.9s 0.5s ease-out forwards,
-             flicker 0.18s 1.4s 6 alternate;
+  animation: shine 0.9s 0.4s ease-out forwards,
+             flicker 0.18s 1.3s 5 alternate,
+             beam-away 0.7s 2.2s ease-in forwards;
 }
 
 @keyframes shine  { to { transform: scaleX(1); } }
 @keyframes flicker { to { opacity: 0.72; } }
+@keyframes beam-away { to { opacity: 0; } }
 
 /* The words the projector throws onto the wall. */
 .projected {
   position: absolute;
-  right: 1rem;
-  width: 62%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 100%;
   text-align: center;
   color: #fff8e7;
   font-weight: bold;
@@ -1205,11 +1215,14 @@ body { padding-bottom: 5.5rem; }
   letter-spacing: 1px;
   text-shadow: 0 0 24px rgba(255, 240, 190, 0.85);
   opacity: 0;
-  animation: shine-the-words 0.8s 1.5s ease-out forwards;
+  animation: shine-the-words 0.9s 1.4s ease-out forwards,
+             words-away 0.5s 2.9s ease-in forwards;
 }
 
+@keyframes words-away { to { opacity: 0; } }
+
 @keyframes shine-the-words {
-  from { opacity: 0; filter: blur(10px); transform: scale(0.9); }
+  from { opacity: 0; filter: blur(12px); transform: scale(0.88); }
   to   { opacity: 1; filter: blur(0);    transform: scale(1); }
 }
 
