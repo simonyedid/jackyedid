@@ -246,6 +246,7 @@ document.getElementById("save-button").addEventListener("click", function () {
   }
 
   album.push({ picture: board.toDataURL("image/png") });
+  if (typeof giveAStar === "function") giveAStar();   // a star for finishing a picture
 
   if (saveAlbum()) {
     showAlbum();

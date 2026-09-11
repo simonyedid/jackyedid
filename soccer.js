@@ -210,6 +210,7 @@ function finishShot() {
 
 function endShootout() {
   playing = false;
+  if (typeof giveAStar === "function") giveAStar();   // a star for a whole shootout
   if (goalsScored > best) {
     best = goalsScored;
     try { localStorage.setItem("jack-penalty-best", best); } catch (whoops) {}

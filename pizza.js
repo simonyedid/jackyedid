@@ -325,6 +325,7 @@ serveButton.addEventListener("click", function () {
 
   showShopScore();
   keepInMyBox();              // every pizza you sell is remembered
+  if (typeof giveAStar === "function") giveAStar();   // a star for serving one
   serveButton.hidden = true;
   message.textContent = "Pizza served! Here comes the next customer...";
 

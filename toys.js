@@ -211,6 +211,7 @@ document.getElementById("keep-button").addEventListener("click", function () {
     return;
   }
 
+  if (typeof giveAStar === "function") giveAStar();   // a star for making a toy
   toybox.push({
     name: nameBox.value.trim() || "No name",
     head: chosen.head.picture,

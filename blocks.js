@@ -217,12 +217,22 @@ function useTool(event) {
   drawWorld();
 }
 
+// A star every time this many blocks have been dug out.
+var BLOCKS_FOR_A_STAR = 25;
+var dugThisVisit = 0;
+
 function digItOut(spot, name) {
   ground[spot.x][spot.y] = -1;
   delete cracks[spot.x + "," + spot.y];
   bag[name] = (bag[name] || 0) + 1;
   showBag();
   say("Got a " + name.toLowerCase() + "!");
+
+  dugThisVisit++;
+  if (dugThisVisit % BLOCKS_FOR_A_STAR === 0) {
+    if (typeof giveAStar === "function") giveAStar();
+    say("\u2B50 " + BLOCKS_FOR_A_STAR + " blocks dug - that is a star!");
+  }
 }
 
 // Which tool would be better for this block?

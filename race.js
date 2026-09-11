@@ -156,6 +156,7 @@ function moveEverything() {
 function crash() {
   racing = false;
   crashed = true;
+  if (typeof giveAStar === "function") giveAStar();   // a star for finishing a race
   if (score > best) {
     best = score;
     try { localStorage.setItem("jack-race-best", best); } catch (whoops) {}

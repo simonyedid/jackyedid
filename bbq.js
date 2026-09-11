@@ -197,6 +197,7 @@ function saveLunchBox() {
 }
 
 function putInLunchBox(food) {
+  if (typeof giveAStar === "function") giveAStar();   // a star for cooking one right
   lunchBox.push({ picture: food.picture, name: food.name });
   saveLunchBox();
   showLunchBox();

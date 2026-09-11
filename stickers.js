@@ -130,7 +130,7 @@ var totalStars = 0;
 Object.keys(GAMES).forEach(function (name) {
   var howMany = starsIn(name);
   totalStars += howMany;
-  lines.push('<a href="' + name + '.html">' + GAMES[name] + "</a> " +
+  lines.push('<a href="' + name + '.html">' + GAMES[name].name + "</a> " +
              "⭐".repeat(howMany) + "☆".repeat(STARS_IN_A_GAME - howMany));
 });
 

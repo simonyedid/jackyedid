@@ -40,20 +40,21 @@ var STARS_IN_A_GAME = 5;           // stars each game holds
 var HOW_MANY_TO_CHOOSE_FROM = 3;   // prizes of each kind to choose between
 // -------------------------------------------------
 
-// Which pages are games you can earn a star on.
+// Which pages are games you can earn a star on, and what earns one.
 var GAMES = {
-  "pizza":  "🍕 Pizza Store",
-  "draw":   "🎨 Drawing Board",
-  "race":   "🏁 Race",
-  "soccer": "⚽ Penalty Shootout",
-  "movie":  "🎬 Movie Maker",
-  "blocks": "⛏️ Block World",
-  "toys":   "🧸 Toy Workshop",
-  "bbq":    "🍖 Barbecue"
+  "pizza":  { name: "\uD83C\uDF55 Pizza Store",      star: "serve a customer" },
+  "draw":   { name: "\uD83C\uDFA8 Drawing Board",    star: "save a picture" },
+  "race":   { name: "\uD83C\uDFC1 Race",             star: "finish a race" },
+  "soccer": { name: "\u26BD Penalty Shootout",   star: "take all 5 penalties" },
+  "movie":  { name: "\uD83C\uDFAC Movie Maker",      star: "play a whole movie" },
+  "blocks": { name: "\u26CF\uFE0F Block World",      star: "dig 25 blocks" },
+  "toys":   { name: "\uD83E\uDDF8 Toy Workshop",     star: "make a toy" },
+  "bbq":    { name: "\uD83C\uDF56 Barbecue",         star: "cook something perfectly" }
 };
 
 var pageName = (location.pathname.split("/").pop() || "index.html").replace(".html", "");
-var thisGame = GAMES[pageName];
+var thisGame = GAMES[pageName] ? GAMES[pageName].name : null;
+var howToGetAStar = GAMES[pageName] ? GAMES[pageName].star : "";
 
 // ---------- Remembering ----------
 
@@ -94,6 +95,9 @@ starRow.className = "star-row";
 var starWords = document.createElement("span");
 starWords.className = "star-words";
 
+var starHint = document.createElement("span");
+starHint.className = "star-hint";
+
 var bookLink = document.createElement("a");
 bookLink.className = "star-book-link";
 bookLink.href = "stickers.html";
@@ -101,6 +105,7 @@ bookLink.textContent = "📒 Sticker Book";
 
 strip.appendChild(starRow);
 strip.appendChild(starWords);
+strip.appendChild(starHint);
 strip.appendChild(bookLink);
 document.body.appendChild(strip);
 
@@ -116,6 +121,9 @@ function showStars() {
   starRow.textContent = "⭐".repeat(howMany) +
                         "☆".repeat(STARS_IN_A_GAME - howMany);
   starWords.textContent = howMany + " of " + STARS_IN_A_GAME + " in " + thisGame;
+  starHint.textContent = howMany >= STARS_IN_A_GAME
+    ? "Full! Choose your prize \uD83C\uDF89"
+    : "\u2B50 for every time you " + howToGetAStar;
 }
 
 showStars();
@@ -138,10 +146,9 @@ function giveAStar() {
   if (starsIn(pageName) >= STARS_IN_A_GAME) offerAPrize();
 }
 
-// You get the star as soon as you actually play, not just for turning up.
-if (thisGame) {
-  document.querySelector("main").addEventListener("pointerdown", giveAStar, { once: true });
-}
+// Each game calls giveAStar() itself when you finish something: serving a
+// pizza, crashing the race car, cooking something perfectly, and so on.
+// That way stars come from playing, not from opening the page.
 
 // ---------- Choosing a prize ----------
 

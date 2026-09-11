@@ -216,6 +216,7 @@ function playMovie() {
 function playNextScene() {
   if (sceneNumber >= scenes.length) {
     againButton.hidden = false;
+    if (typeof giveAStar === "function") giveAStar();   // a star for making a movie
     return;
   }
 

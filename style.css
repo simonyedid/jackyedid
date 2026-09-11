@@ -1810,3 +1810,13 @@ body { padding-top: 3rem; }
 @media (prefers-reduced-motion: reduce) {
   .key-mic.listening { animation: none; }
 }
+
+/* The line telling you how to earn a star on this page. */
+.star-hint {
+  color: var(--cheese);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .star-hint { display: none; }
+}
