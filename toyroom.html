@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Toy Room — Jack Yedid</title>
+  <meta name="description" content="Jack Yedid's toy room, with every prize there is to win.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🚪 <span class="name">Toy</span> Room</h1>
+    <p class="tagline">Every toy there is. The dark ones you have not won yet.</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h2>🧸 The toy shelves</h2>
+      <p class="album-message" id="toy-count"></p>
+      <!-- Every toy there is. toyroom.js fills the shelves. -->
+      <div class="shelves" id="toy-shelves"></div>
+    </section>
+
+    <section class="card">
+      <h2>📒 The sticker shelves</h2>
+      <p class="album-message" id="sticker-count"></p>
+      <div class="shelves" id="sticker-shelves"></div>
+    </section>
+
+    <section class="card big-prize-card">
+      <h2>🏆 The Big Prize</h2>
+      <div class="big-prize" id="big-prize"></div>
+      <p class="album-message" id="big-prize-words"></p>
+    </section>
+
+    <p class="back-link">
+      <a href="stickers.html">📒 My sticker book</a> ·
+      <a href="index.html">← Back to my website</a>
+    </p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="stars.js?v=2"></script>
+  <script src="toyroom.js?v=1"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>

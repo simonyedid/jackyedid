@@ -33,6 +33,9 @@ var TOYS = [
   { picture: "🪀", name: "Yo-yo" }
 ];
 
+// The big prize for collecting every single sticker and every toy.
+var BIG_PRIZE = { picture: "\uD83E\uDD5F", name: "The Mega Gold Dumpling" };
+
 var STARS_IN_A_GAME = 5;           // stars each game holds
 var HOW_MANY_TO_CHOOSE_FROM = 3;   // prizes of each kind to choose between
 // -------------------------------------------------
@@ -142,8 +145,18 @@ if (thisGame) {
 
 // ---------- Choosing a prize ----------
 
-// Pick a few at random out of a list.
-function someOf(list, howMany) {
+// Pick a few at random out of a list, but offer ones that have not
+// been won yet first - otherwise the same prize keeps turning up and
+// the toy room could never be filled.
+function someOf(list, howMany, whichPile) {
+  var alreadyWon = (saved[whichPile] || []).map(function (p) { return p.name; });
+  var newOnes = list.filter(function (p) { return alreadyWon.indexOf(p.name) === -1; });
+  var pickFrom = newOnes.length >= howMany ? newOnes : list;
+  return shuffle(pickFrom).slice(0, howMany);
+}
+
+// Put a list in a jumbled order.
+function shuffle(list) {
   var shuffled = list.slice();
   for (var i = shuffled.length - 1; i > 0; i--) {
     var swapWith = Math.floor(Math.random() * (i + 1));
@@ -151,7 +164,7 @@ function someOf(list, howMany) {
     shuffled[i] = shuffled[swapWith];
     shuffled[swapWith] = keep;
   }
-  return shuffled.slice(0, howMany);
+  return shuffled;
 }
 
 function offerAPrize() {
@@ -172,8 +185,10 @@ function offerAPrize() {
   panel.appendChild(inside);
   document.body.appendChild(panel);
 
-  fillChoices(inside.querySelector("#sticker-choices"), someOf(STICKERS, HOW_MANY_TO_CHOOSE_FROM), "stickers", panel);
-  fillChoices(inside.querySelector("#toy-choices"), someOf(TOYS, HOW_MANY_TO_CHOOSE_FROM), "toys", panel);
+  fillChoices(inside.querySelector("#sticker-choices"),
+              someOf(STICKERS, HOW_MANY_TO_CHOOSE_FROM, "stickers"), "stickers", panel);
+  fillChoices(inside.querySelector("#toy-choices"),
+              someOf(TOYS, HOW_MANY_TO_CHOOSE_FROM, "toys"), "toys", panel);
 }
 
 function fillChoices(box, prizes, whichPile, panel) {
@@ -201,4 +216,11 @@ function fillChoices(box, prizes, whichPile, panel) {
     });
     box.appendChild(button);
   });
+}
+
+
+// ---------- Have you collected everything? ----------
+
+function haveWonThemAll() {
+  return saved.stickers.length >= STICKERS.length && saved.toys.length >= TOYS.length;
 }
