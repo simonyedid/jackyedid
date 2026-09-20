@@ -285,6 +285,99 @@ footer {
   padding: 0;
 }
 
+/* ---------- My Restaurant page ---------- */
+
+/* The shelf buttons are a bit bigger than the ingredients, because they
+   are the first thing you pick. */
+.shelf-button { font-size: 1.05rem; }
+
+#ingredients .picker-button,
+#shelves .picker-button {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.kitchen-title {
+  font-weight: bold;
+  margin: 0 0 0.75rem;
+}
+
+/* The mixing bowl, with everything you have put in it. */
+.bowl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 84px;
+  padding: 0.9rem;
+  border: 4px dashed var(--crust);
+  border-radius: 0 0 90px 90px;
+  background: #fffdf6;
+}
+
+.bowl-thing {
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 12px;
+}
+
+.bowl-thing:hover { border-color: var(--ink); transform: none; }
+
+.bowl-message {
+  font-size: 1rem;
+  margin: 0.75rem 0 1rem;
+}
+
+/* The plate that comes out of the oven. */
+.plate {
+  width: 78%;
+  max-width: 260px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 10px solid #e9e4d8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+}
+
+.plate-dish { font-size: 3.4rem; line-height: 1; }
+
+.plate-bits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  justify-content: center;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* Everything you have cooked and kept. */
+.kept-food {
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 0.6rem;
+  background: var(--card);
+  text-align: center;
+}
+
+.kept-name {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.kept-bits {
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
 /* ---------- The Penalty Shootout page ---------- */
 
 .pitch {

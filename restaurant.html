@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Restaurant — Jack Yedid</title>
+  <meta name="description" content="Cook whatever the customer orders in Jack Yedid's restaurant game.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=47">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🍽️ My <span class="name">Restaurant</span></h1>
+    <p class="tagline">Cook the customer anything they want!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h2>🔔 The customer</h2>
+      <!-- Who is at the table, and what they asked for. -->
+      <div class="customer">
+        <div class="customer-face" id="customer-face">🧑</div>
+        <p class="customer-order" id="order">Sitting down...</p>
+      </div>
+      <button id="next-customer">🔔 A different customer</button>
+    </section>
+
+    <section class="card">
+      <h2>👨‍🍳 The kitchen</h2>
+
+      <!-- The big button Jack asked for. It opens all the cooking stuff. -->
+      <button id="what-to-cook">👨‍🍳 What do you want to cook?</button>
+
+      <!-- All the cooking stuff. restaurant.js fills these in. -->
+      <div id="cupboard" hidden>
+        <p class="kitchen-title" id="cupboard-title">Pick a kind of food:</p>
+        <!-- The shelves: fruits, vegetables, meat and all the rest. -->
+        <div class="picker" id="shelves"></div>
+        <!-- Everything on one shelf, like the whole list of fruits. -->
+        <div class="picker" id="ingredients" hidden></div>
+        <button id="back-to-shelves" hidden>◀ All the cooking stuff</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🥣 The mixing bowl</h2>
+      <!-- What you have put in so far. Tap one to take it out again. -->
+      <div class="bowl" id="bowl"></div>
+      <p class="bowl-message" id="bowl-message">The bowl is empty. Put some ingredients in!</p>
+      <button id="cook-button">🔥 Put it in the oven!</button>
+      <button id="empty-bowl">🧹 Empty the bowl</button>
+    </section>
+
+    <section class="card">
+      <h2>🔥 The oven</h2>
+      <!-- The food bakes in here and the oven dings when it is ready. -->
+      <div class="oven">
+        <div class="oven-top">🔥 OVEN</div>
+        <div class="oven-inside">
+          <div class="plate" id="plate">
+            <div class="plate-dish" id="plate-dish"></div>
+            <div class="plate-bits" id="plate-bits"></div>
+          </div>
+          <div class="oven-door" id="oven-door"></div>
+        </div>
+        <div class="bake-bar"><div class="bake-bar-fill" id="bake-bar"></div></div>
+      </div>
+
+      <p class="pizza-message" id="oven-message">Nothing is cooking yet.</p>
+      <button id="serve-button" hidden>🍽️ Give it to the customer</button>
+    </section>
+
+    <section class="card">
+      <h2>🏆 Score</h2>
+      <p class="bbq-score" id="score">Served 0 · Perfect 0 · Best 0</p>
+    </section>
+
+    <section class="card" id="restaurant-box">
+      <h2>📦 My Restaurant Box</h2>
+      <p class="album-message" id="box-message"></p>
+      <!-- Everything you have cooked and kept. -->
+      <div class="album" id="box"></div>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="restaurant.js?v=1"></script>
+  <script src="stars.js?v=5"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>
