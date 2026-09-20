@@ -523,15 +523,29 @@ function findThePlace(words) {
   if (!looking) return null;
 
   var found = null;
+  var foundAt = -1;
+
   PLACES.forEach(function (place) {
-    if (found) return;
     place.words.forEach(function (word) {
-      if (found) return;
-      // Short words like "ny" have to match exactly, or "funny" would
-      // take you to New York.
-      if (word.length <= 3 ? looking === word : looking.indexOf(word) >= 0) found = place;
+      var whereItIs = -1;
+
+      if (word.length <= 3) {
+        // Short words like "ny" only count on their own, or "funny"
+        // would take you to New York.
+        if (looking === word) whereItIs = 0;
+      } else {
+        whereItIs = looking.lastIndexOf(word);
+      }
+
+      // If more than one place is in there, the LAST one you wrote is
+      // the one you meant.
+      if (whereItIs > foundAt) {
+        found = place;
+        foundAt = whereItIs;
+      }
     });
   });
+
   return found;
 }
 
@@ -798,7 +812,11 @@ function goIntoThePaper() {
 
 function comeBackOut() {
   insideThePaper = false;
-  showTheWordOnThePaper();          // your writing comes back with the paper
+
+  // Start with an empty paper to write on, so the next word is a fresh
+  // one instead of being added onto the end of the last one.
+  placeBox.value = "";
+  showTheWordOnThePaper();
   intoThePaperButton.textContent = "🌀 Go into the paper";
   otherPaperButtons.forEach(function (name) {
     document.getElementById(name).hidden = false;
@@ -975,6 +993,13 @@ function showTheWordOnThePaper() {
 
 placeBox.addEventListener("input", showTheWordOnThePaper);
 colorButtonsBox.addEventListener("click", showTheWordOnThePaper);
+
+// Clearing the paper rubs out what you wrote on it as well.
+document.getElementById("clear-button").addEventListener("click", function () {
+  if (insideThePaper) return;
+  placeBox.value = "";
+  showTheWordOnThePaper();
+});
 
 intoThePaperButton.addEventListener("click", function () {
   if (insideThePaper) comeBackOut();
