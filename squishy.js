@@ -18,8 +18,7 @@ var SQUISHIES = [
   { picture: "🧈", name: "butter",         goo: "#ffd978" },
   { picture: "🥕", name: "carrot",         goo: "#f77f00" },
   { picture: "🥥", name: "coconut oil",    goo: "#f3f0e6" },
-  { picture: "🥜", name: "peanut",         goo: "#c08a4a" },
-  { picture: "🎮", name: "game controller", goo: "#4a90d9" }
+  { picture: "🥜", name: "peanut",         goo: "#c08a4a" }
 ];
 
 // ---------- SETTINGS - change these! ----------
