@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nee-Doh Factory — Jack Yedid</title>
+  <meta name="description" content="Make and squeeze Nee-Dohs in Jack Yedid's Nee-Doh Factory.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=51">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🟢 <span class="name">Nee-Doh</span> Factory</h1>
+    <p class="tagline">Squeeze it, stretch it, and watch it creep back!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h2>🫵 Which Nee-Doh?</h2>
+      <!-- All of them. needoh.js makes these buttons. -->
+      <div class="picker" id="needoh-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🏭 The filling machine</h2>
+      <!-- The goo gets squirted in here. -->
+      <div class="machine" id="machine">
+        <div class="machine-top">🏭 NEE-DOH FILLER</div>
+        <div class="machine-inside">
+          <div class="goo" id="goo" hidden></div>
+        </div>
+        <div class="machine-legs"></div>
+      </div>
+      <p class="pizza-message" id="machine-message">Pick one, then press FILL IT UP!</p>
+      <button id="fill-button">🏭 FILL IT UP!</button>
+    </section>
+
+    <section class="card">
+      <h2>🫳 Squeeze it!</h2>
+      <!-- Turning the lights off in here makes the glow in the dark one shine. -->
+      <div class="squeeze-room" id="room">
+        <button class="needoh" id="needoh" hidden></button>
+      </div>
+      <p class="squishy-name" id="needoh-name"></p>
+      <p class="bbq-score" id="squeeze-count">Squeezes: 0</p>
+      <p class="bowl-message" id="squeeze-help">Fill one up in the machine first!</p>
+      <button id="lights-button">🌙 Lights off</button>
+      <button id="keep-button" hidden>🧺 Keep it on my shelf</button>
+    </section>
+
+    <section class="card" id="needoh-shelf">
+      <h2>🧺 My Nee-Doh Shelf</h2>
+      <p class="album-message" id="shelf-message"></p>
+      <!-- Every one you keep. You can squeeze these too! -->
+      <div class="album" id="shelf"></div>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="needoh.js?v=1"></script>
+  <script src="stars.js?v=7"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>

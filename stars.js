@@ -52,7 +52,8 @@ var GAMES = {
   "bbq":    { name: "\uD83C\uDF56 Barbecue",         star: "cook something perfectly" },
   "basketball": { name: "\uD83C\uDFC0 Basketball",   star: "play a whole game of 10 shots" },
   "restaurant": { name: "\uD83C\uDF7D\uFE0F My Restaurant", star: "serve a customer" },
-  "squishy":    { name: "\uD83E\uDEF3 Squishy Factory", star: "make a squishy" }
+  "squishy":    { name: "\uD83E\uDEF3 Squishy Factory", star: "make a squishy" },
+  "needoh":     { name: "\uD83D\uDFE2 Nee-Doh Factory", star: "make a Nee-Doh" }
 };
 
 var pageName = (location.pathname.split("/").pop() || "index.html").replace(".html", "");
