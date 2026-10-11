@@ -8,15 +8,17 @@
 // A picture, a name, and the color of the goo it is made from.
 var SQUISHIES = [
   { picture: "🧀", name: "cheese",         goo: "#f1dc96", shape: "cube" },
-  { picture: "🍓", name: "strawberry",     goo: "#e63946", shape: "berry" },
-  { picture: "🍇", name: "grape",          goo: "#9d4edd" },
+  { picture: "🍓", name: "strawberry",     goo: "#e63946", shape: "berry",
+    box: "holes", label: "SQUISHY STRAWBERRY", tryMe: true },
+  { picture: "🍇", name: "grape",          goo: "#9d4edd",
+    box: "holes", label: "JUICY SQUISHY WHIP", tryMe: true },
   { picture: "🥟", name: "dumpling",       goo: "#f2e3c4", box: "steamer" },
   { picture: "🥒", name: "pickle",         goo: "#4f9d3a", shape: "long" },
   { picture: "🍗", name: "fried chicken",  goo: "#d9a273", shape: "craggy" },
   { picture: "🧊", name: "nice cube",      goo: "#6fd3e8" },
   { picture: "🍬", name: "gumdrop",        goo: "#ff6fa5" },
   { picture: "🧈", name: "butter",         goo: "#ffd978" },
-  { picture: "🥕", name: "carrot",         goo: "#f4791f", shape: "carrot" },
+  { picture: "🥕", name: "carrot",         goo: "#f4791f", shape: "carrot", box: "holes" },
   { picture: "🥥", name: "coconut oil",    goo: "#f3f0e6" },
   { picture: "🥜", name: "peanut",         goo: "#c08a4a" }
 ];
@@ -47,6 +49,8 @@ var squishyBox = document.getElementById("squishy-box");
 var boxLid = document.getElementById("box-lid");
 var boxLabel = document.getElementById("box-label");
 var boxBrand = document.querySelector(".box-brand");
+var boxTag = document.getElementById("box-tag");
+var boxToy = document.getElementById("box-toy");
 
 boxBrand.textContent = WHO_MAKES_THEM;
 
@@ -132,10 +136,18 @@ function itIsReady() {
 
   // Its empty box waits next to it with the lid open. Some squishies
   // have their own kind of box - the dumpling comes in a steamer.
-  squishyBox.className = "squishy-box" + (made.box ? " " + made.box : "");
+  squishyBox.className = "squishy-box" + (made.box ? " " + made.box : "") +
+                        (made.tryMe ? " try-me" : "");
   squishyBox.hidden = false;
   boxLid.classList.remove("shut");
-  boxLabel.textContent = "SMOSHY " + made.name.toUpperCase();
+  // Most boxes just say SMOSHY and the name, but a squishy can have its
+  // own words printed on the front instead.
+  boxLabel.textContent = made.label || ("SMOSHY " + made.name.toUpperCase());
+
+  // The tag on the corner, and the big one you can see inside.
+  boxTag.textContent = made.name.toUpperCase() + " SQUISHY TOYS";
+  boxToy.className = "box-toy" + (made.shape ? " " + made.shape : "");
+  boxToy.style.backgroundColor = made.goo;
 
   // You cannot box it until you have tested it.
   keepButton.hidden = true;
