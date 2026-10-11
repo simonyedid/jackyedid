@@ -7,16 +7,16 @@
 // ---------- ALL THE SQUISHIES - add your own! ----------
 // A picture, a name, and the color of the goo it is made from.
 var SQUISHIES = [
-  { picture: "🧀", name: "cheese",         goo: "#f7c948" },
-  { picture: "🍓", name: "strawberry",     goo: "#e63946" },
+  { picture: "🧀", name: "cheese",         goo: "#f1dc96", shape: "cube" },
+  { picture: "🍓", name: "strawberry",     goo: "#e63946", shape: "berry" },
   { picture: "🍇", name: "grape",          goo: "#9d4edd" },
-  { picture: "🥟", name: "dumpling",       goo: "#f2e3c4" },
-  { picture: "🥒", name: "pickle",         goo: "#4f9d3a" },
-  { picture: "🍗", name: "fried chicken",  goo: "#d08b3a" },
+  { picture: "🥟", name: "dumpling",       goo: "#f2e3c4", box: "steamer" },
+  { picture: "🥒", name: "pickle",         goo: "#4f9d3a", shape: "long" },
+  { picture: "🍗", name: "fried chicken",  goo: "#d9a273", shape: "craggy" },
   { picture: "🧊", name: "nice cube",      goo: "#6fd3e8" },
   { picture: "🍬", name: "gumdrop",        goo: "#ff6fa5" },
   { picture: "🧈", name: "butter",         goo: "#ffd978" },
-  { picture: "🥕", name: "carrot",         goo: "#f77f00" },
+  { picture: "🥕", name: "carrot",         goo: "#f4791f", shape: "carrot" },
   { picture: "🥥", name: "coconut oil",    goo: "#f3f0e6" },
   { picture: "🥜", name: "peanut",         goo: "#c08a4a" }
 ];
@@ -116,16 +116,17 @@ function itIsReady() {
   squishes = 0;
 
   squishyBlob.hidden = false;
-  squishyBlob.classList.remove("going-in");
-  squishyBlob.style.background = made.goo;
-  squishyBlob.classList.remove("super");
+  squishyBlob.className = "squishy" + (made.shape ? " " + made.shape : "");
+  squishyBlob.style.backgroundColor = made.goo;
   squishyFace.textContent = made.picture;
   squishyName.textContent = "Your " + made.name + " squishy";
 
   machineMessage.textContent = "POP! One " + made.name +
                                " squishy ✨ Now test it!";
 
-  // Its empty box waits next to it with the lid open.
+  // Its empty box waits next to it with the lid open. Some squishies
+  // have their own kind of box - the dumpling comes in a steamer.
+  squishyBox.className = "squishy-box" + (made.box ? " " + made.box : "");
   squishyBox.hidden = false;
   boxLid.classList.remove("shut");
   boxFront.textContent = made.name.toUpperCase();
@@ -332,6 +333,7 @@ keepButton.addEventListener("click", function () {
       picture: boxingUp.picture,
       name: boxingUp.name,
       goo: boxingUp.goo,
+      shape: boxingUp.shape,
       squishes: howSquishy
     });
 
@@ -368,8 +370,8 @@ function showShelf() {
 
     var blob = document.createElement("button");
     blob.type = "button";
-    blob.className = "mini-squishy";
-    blob.style.background = one.goo;
+    blob.className = "mini-squishy" + (one.shape ? " " + one.shape : "");
+    blob.style.backgroundColor = one.goo;
     blob.textContent = one.picture;
     blob.title = "Squish the " + one.name;
     blob.setAttribute("aria-label", "Squish the " + one.name);
