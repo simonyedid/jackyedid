@@ -39,21 +39,27 @@
     </section>
 
     <section class="card">
-      <h2>🫳 Squish it!</h2>
+      <h2>🫳 Test it!</h2>
       <div class="squish-area">
         <!-- Hold this down and it squashes. Let go and it springs back. -->
         <button class="squishy" id="squishy" hidden>
           <span class="squishy-face" id="squishy-face"></span>
         </button>
       </div>
+
+      <!-- Every squishy gets its own box to go in. -->
+      <div class="squishy-box" id="squishy-box" hidden>
+        <div class="box-lid" id="box-lid"></div>
+        <div class="box-front" id="box-front">SQUISHY</div>
+      </div>
       <p class="squishy-name" id="squishy-name"></p>
       <p class="bbq-score" id="squish-count">Squishes: 0</p>
       <p class="bowl-message" id="squish-help">Make one in the machine first!</p>
-      <button id="keep-button" hidden>🧺 Keep it on my shelf</button>
+      <button id="keep-button" hidden>📦 Put it in its box</button>
     </section>
 
     <section class="card" id="squishy-shelf">
-      <h2>🧺 My Squishy Shelf</h2>
+      <h2>📦 My Squishy Boxes</h2>
       <p class="album-message" id="shelf-message"></p>
       <!-- Every squishy you keep. You can squish these ones too! -->
       <div class="album" id="shelf"></div>
@@ -67,7 +73,7 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="squishy.js?v=2"></script>
+  <script src="squishy.js?v=3"></script>
   <script src="stars.js?v=6"></script>
   <script src="music.js?v=3"></script>
 </body>

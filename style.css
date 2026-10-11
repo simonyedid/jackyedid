@@ -526,7 +526,51 @@ footer {
   to   { transform: translateY(-130px) scale(1.3); opacity: 0; }
 }
 
-/* The shelf of the ones you have kept. You can squish these too. */
+/* The box each squishy goes into when it is finished. */
+.squishy-box {
+  position: relative;
+  width: 190px;
+  margin: 0 auto 1rem;
+  border: 5px solid var(--ink);
+  border-radius: 10px;
+  background: #d9a86c;
+  overflow: hidden;
+}
+
+.box-lid {
+  height: 34px;
+  background: #c08a4a;
+  border-bottom: 4px solid var(--ink);
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-in;
+}
+
+/* The lid comes down once the squishy is inside. */
+.box-lid.shut { transform: translateY(0); }
+
+.box-front {
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding: 1.6rem 0.5rem;
+  color: #5a3a1c;
+}
+
+/* The squishy dropping into its box. */
+.squishy.going-in { animation: into-the-box 0.7s ease-in forwards; }
+
+@keyframes into-the-box {
+  0%   { transform: scale(1) translateY(0); opacity: 1; }
+  60%  { transform: scale(0.6) translateY(70px); opacity: 1; }
+  100% { transform: scale(0.3) translateY(130px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box-lid { transition: none; }
+  .squishy.going-in { animation: none; opacity: 0; }
+}
+
+/* The shelf of the ones you have boxed up. You can squish these too. */
 .kept-squishy {
   border: 3px solid var(--ink);
   border-radius: 14px;

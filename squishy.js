@@ -23,6 +23,7 @@ var SQUISHIES = [
 
 // ---------- SETTINGS - change these! ----------
 var HOW_LONG_IT_TAKES = 2600;      // milliseconds in the squishy machine
+var TESTS_NEEDED = 3;              // squishes to test that it really is squishy
 var SUPER_SQUISHY_AT = 20;         // squishes before it goes SUPER SQUISHY
 var HOW_MANY_FIT_ON_THE_SHELF = 12;
 // ----------------------------------------------
@@ -39,6 +40,9 @@ var squishyName = document.getElementById("squishy-name");
 var squishCount = document.getElementById("squish-count");
 var squishHelp = document.getElementById("squish-help");
 var keepButton = document.getElementById("keep-button");
+var squishyBox = document.getElementById("squishy-box");
+var boxLid = document.getElementById("box-lid");
+var boxFront = document.getElementById("box-front");
 
 var shelfBox = document.getElementById("shelf");
 var shelfMessage = document.getElementById("shelf-message");
@@ -85,6 +89,8 @@ makeButton.addEventListener("click", function () {
   made = null;
   keepButton.hidden = true;
   squishyBlob.hidden = true;
+  squishyBox.hidden = true;
+  boxLid.classList.remove("shut");
   squishes = 0;
 
   // The goo pours in, in the color of whatever you picked.
@@ -110,13 +116,22 @@ function itIsReady() {
   squishes = 0;
 
   squishyBlob.hidden = false;
+  squishyBlob.classList.remove("going-in");
   squishyBlob.style.background = made.goo;
   squishyBlob.classList.remove("super");
   squishyFace.textContent = made.picture;
   squishyName.textContent = "Your " + made.name + " squishy";
 
-  machineMessage.textContent = "POP! One " + made.name + " squishy ✨";
-  keepButton.hidden = false;
+  machineMessage.textContent = "POP! One " + made.name +
+                               " squishy ✨ Now test it!";
+
+  // Its empty box waits next to it with the lid open.
+  squishyBox.hidden = false;
+  boxLid.classList.remove("shut");
+  boxFront.textContent = made.name.toUpperCase();
+
+  // You cannot box it until you have tested it.
+  keepButton.hidden = true;
   showSquishes();
 
   if (typeof giveAStar === "function") giveAStar();   // a star for making a squishy
@@ -145,6 +160,9 @@ function letGo() {
   squishedAltogether++;
   try { localStorage.setItem("jack-squishes", squishedAltogether); } catch (whoops) {}
 
+  if (squishes === TESTS_NEEDED) pop();        // it passed the test!
+  if (squishes >= TESTS_NEEDED) keepButton.hidden = false;
+
   if (squishes === SUPER_SQUISHY_AT) {
     squishyBlob.classList.add("super");
     sparkle();
@@ -157,13 +175,18 @@ function showSquishes() {
   squishCount.textContent = "Squishes: " + squishes +
                             " · Squished altogether: " + squishedAltogether;
 
-  if (squishes >= SUPER_SQUISHY_AT) {
-    squishHelp.textContent = "✨ SUPER SQUISHY! ✨ It is as squishy as it can get.";
-  } else if (squishes === 0) {
-    squishHelp.textContent = "Hold it down to squash it. Let go and it springs back!";
+  if (squishes === 0) {
+    squishHelp.textContent = "TEST IT! Hold it down to squash it, and let go.";
+  } else if (squishes < TESTS_NEEDED) {
+    squishHelp.textContent = "Testing... " + (TESTS_NEEDED - squishes) +
+                             " more squish" + (TESTS_NEEDED - squishes === 1 ? "" : "es") +
+                             " to check it.";
+  } else if (squishes >= SUPER_SQUISHY_AT) {
+    squishHelp.textContent = "✨ SUPER SQUISHY! ✨ As squishy as it can get. Box it up!";
   } else {
-    squishHelp.textContent = "Keep going! " + (SUPER_SQUISHY_AT - squishes) +
-                             " more to make it SUPER SQUISHY.";
+    squishHelp.textContent = "✅ Tested! It really is squishy. Put it in its box, " +
+                             "or squish it " + (SUPER_SQUISHY_AT - squishes) +
+                             " more times to make it SUPER SQUISHY.";
   }
 }
 
@@ -279,30 +302,53 @@ function saveShelf() {
 
 keepButton.addEventListener("click", function () {
   if (!made) return;
+  if (squishes < TESTS_NEEDED) return;        // it has to be tested first
 
   if (shelf.length >= HOW_MANY_FIT_ON_THE_SHELF) {
-    shelfMessage.textContent = "The shelf is full! Throw one away with 🗑️ to make room.";
+    shelfMessage.textContent = "No room for another box! Throw one away with 🗑️.";
     return;
   }
 
-  shelf.push({
-    picture: made.picture,
-    name: made.name,
-    goo: made.goo,
-    squishes: squishes
-  });
+  var boxingUp = made;
+  var howSquishy = squishes;
 
-  if (saveShelf()) {
-    showShelf();
-    machineMessage.textContent = "Your " + made.name +
-                                 " squishy is on the shelf. Make another one!";
-    made = null;
+  keepButton.hidden = true;
+  made = null;                                // it is on its way into the box
+
+  // It drops in...
+  squishyBlob.classList.add("going-in");
+  machineMessage.textContent = "Tested and into its box it goes... 📦";
+
+  // ...the lid comes down...
+  setTimeout(function () {
+    boxLid.classList.add("shut");
     squishyBlob.hidden = true;
-    keepButton.hidden = true;
-  } else {
-    shelf.pop();
-    shelfMessage.textContent = "This browser has run out of room to keep squishies.";
-  }
+    squishyBlob.classList.remove("going-in");
+  }, 700);
+
+  // ...and then the box goes on the shelf.
+  setTimeout(function () {
+    shelf.push({
+      picture: boxingUp.picture,
+      name: boxingUp.name,
+      goo: boxingUp.goo,
+      squishes: howSquishy
+    });
+
+    if (saveShelf()) {
+      showShelf();
+      machineMessage.textContent = "One boxed " + boxingUp.name +
+                                   " squishy! Make another one.";
+    } else {
+      shelf.pop();
+      shelfMessage.textContent = "This browser has run out of room to keep squishies.";
+    }
+
+    squishyBox.hidden = true;
+    boxLid.classList.remove("shut");
+    squishes = 0;
+    showSquishes();
+  }, 1400);
 });
 
 function showShelf() {
