@@ -378,6 +378,178 @@ footer {
   line-height: 1.4;
 }
 
+/* ---------- The Squishy Factory page ---------- */
+
+/* The machine the goo gets poured into. */
+.machine {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 1rem;
+}
+
+.machine-top {
+  background: var(--ink);
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 16px 16px 0 0;
+  letter-spacing: 1px;
+  font-size: 0.95rem;
+}
+
+.machine-inside {
+  position: relative;
+  height: 150px;
+  background: #3a3f46;
+  border: 6px solid var(--ink);
+  border-top: none;
+  overflow: hidden;
+}
+
+.machine-legs {
+  height: 18px;
+  background: var(--ink);
+  border-radius: 0 0 14px 14px;
+}
+
+/* The machine jiggles while it is working. */
+.machine.working .machine-inside { animation: jiggle 0.25s linear infinite; }
+
+@keyframes jiggle {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  75%      { transform: translateX(3px); }
+}
+
+/* The goo pouring down inside it. */
+.goo {
+  position: absolute;
+  left: 50%;
+  top: -40%;
+  width: 46px;
+  height: 100%;
+  margin-left: -23px;
+  border-radius: 0 0 40% 40%;
+}
+
+.goo.pouring { animation: pour 2.6s ease-in forwards; }
+
+@keyframes pour {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(40%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .machine.working .machine-inside { animation: none; }
+  .goo.pouring { animation: none; }
+}
+
+/* The squishy itself. */
+.squish-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+  padding: 1rem 0;
+}
+
+.squishy {
+  width: 190px;
+  height: 190px;
+  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+  border: 5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: grab;
+  touch-action: none;           /* so holding it does not scroll the page */
+  box-shadow: inset -10px -14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.12s ease-out, filter 0.12s ease-out;
+}
+
+/* Held down: it squashes flat and goes a bit darker. */
+.squishy.squished {
+  transform: scale(1.22, 0.6);
+  filter: brightness(0.92);
+  cursor: grabbing;
+}
+
+/* Let go and it wobbles back into shape. */
+.squishy.boing { animation: boing 0.5s ease-out; }
+
+@keyframes boing {
+  0%   { transform: scale(1.18, 0.66); }
+  35%  { transform: scale(0.9, 1.14); }
+  60%  { transform: scale(1.07, 0.94); }
+  80%  { transform: scale(0.97, 1.03); }
+  100% { transform: scale(1, 1); }
+}
+
+/* Twenty squishes and it glows. */
+.squishy.super {
+  box-shadow: inset -10px -14px 0 rgba(0, 0, 0, 0.12),
+              0 0 0 6px rgba(255, 215, 90, 0.55),
+              0 0 26px 8px rgba(255, 215, 90, 0.6);
+}
+
+.squishy-face {
+  font-size: 4.5rem;
+  line-height: 1;
+  pointer-events: none;        /* the whole blob takes the squish */
+}
+
+.squishy-name {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .squishy, .squishy.boing { transition: none; animation: none; }
+}
+
+/* The stars that fly off when it goes SUPER SQUISHY. */
+.squish-sparkle {
+  position: absolute;
+  bottom: 30%;
+  font-size: 1.6rem;
+  pointer-events: none;
+  animation: fly-off 1.5s ease-out forwards;
+}
+
+@keyframes fly-off {
+  from { transform: translateY(0) scale(0.6); opacity: 1; }
+  to   { transform: translateY(-130px) scale(1.3); opacity: 0; }
+}
+
+/* The shelf of the ones you have kept. You can squish these too. */
+.kept-squishy {
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 0.6rem;
+  background: var(--card);
+  text-align: center;
+}
+
+.mini-squishy {
+  width: 72px;
+  height: 72px;
+  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+  border: 3px solid var(--ink);
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0;
+  touch-action: none;
+  transition: transform 0.12s ease-out;
+}
+
+.mini-squishy.squished { transform: scale(1.2, 0.62); }
+.mini-squishy:hover { transform: none; }
+
 /* ---------- The Penalty Shootout page ---------- */
 
 .pitch {

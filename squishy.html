@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Squishy Factory — Jack Yedid</title>
+  <meta name="description" content="Make your own squishies in Jack Yedid's Squishy Factory.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=48">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>🫳 <span class="name">Squishy</span> Factory</h1>
+    <p class="tagline">Make a squishy, then squish it!</p>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h2>🧺 Which squishy?</h2>
+      <!-- All the squishies. squishy.js makes these buttons. -->
+      <div class="picker" id="squishy-picker"></div>
+    </section>
+
+    <section class="card">
+      <h2>🏭 The squishy machine</h2>
+      <!-- The goo pours down into the machine and a squishy pops out. -->
+      <div class="machine" id="machine">
+        <div class="machine-top">🏭 SQUISHY MACHINE</div>
+        <div class="machine-inside">
+          <div class="goo" id="goo" hidden></div>
+        </div>
+        <div class="machine-legs"></div>
+      </div>
+      <p class="pizza-message" id="machine-message">Pick a squishy, then press MAKE IT!</p>
+      <button id="make-button">🏭 MAKE IT!</button>
+    </section>
+
+    <section class="card">
+      <h2>🫳 Squish it!</h2>
+      <div class="squish-area">
+        <!-- Hold this down and it squashes. Let go and it springs back. -->
+        <button class="squishy" id="squishy" hidden>
+          <span class="squishy-face" id="squishy-face"></span>
+        </button>
+      </div>
+      <p class="squishy-name" id="squishy-name"></p>
+      <p class="bbq-score" id="squish-count">Squishes: 0</p>
+      <p class="bowl-message" id="squish-help">Make one in the machine first!</p>
+      <button id="keep-button" hidden>🧺 Keep it on my shelf</button>
+    </section>
+
+    <section class="card" id="squishy-shelf">
+      <h2>🧺 My Squishy Shelf</h2>
+      <p class="album-message" id="shelf-message"></p>
+      <!-- Every squishy you keep. You can squish these ones too! -->
+      <div class="album" id="shelf"></div>
+    </section>
+
+    <p class="back-link"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer>
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="squishy.js?v=1"></script>
+  <script src="stars.js?v=6"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>
