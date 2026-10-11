@@ -21,6 +21,9 @@ var SQUISHIES = [
   { picture: "🥜", name: "peanut",         goo: "#c08a4a" }
 ];
 
+// Who makes them. It goes on the front of every box.
+var WHO_MAKES_THEM = "WT TOYS";
+
 // ---------- SETTINGS - change these! ----------
 var HOW_LONG_IT_TAKES = 2600;      // milliseconds in the squishy machine
 var TESTS_NEEDED = 3;              // squishes to test that it really is squishy
@@ -42,7 +45,10 @@ var squishHelp = document.getElementById("squish-help");
 var keepButton = document.getElementById("keep-button");
 var squishyBox = document.getElementById("squishy-box");
 var boxLid = document.getElementById("box-lid");
-var boxFront = document.getElementById("box-front");
+var boxLabel = document.getElementById("box-label");
+var boxBrand = document.querySelector(".box-brand");
+
+boxBrand.textContent = WHO_MAKES_THEM;
 
 var shelfBox = document.getElementById("shelf");
 var shelfMessage = document.getElementById("shelf-message");
@@ -129,7 +135,7 @@ function itIsReady() {
   squishyBox.className = "squishy-box" + (made.box ? " " + made.box : "");
   squishyBox.hidden = false;
   boxLid.classList.remove("shut");
-  boxFront.textContent = made.name.toUpperCase();
+  boxLabel.textContent = "SMOSHY " + made.name.toUpperCase();
 
   // You cannot box it until you have tested it.
   keepButton.hidden = true;
