@@ -9,7 +9,7 @@
        The ?v=2 on the stylesheet below does the same job for the colors:
        bump it to v=3, v=4 and so on whenever style.css changes. -->
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=51">
+  <link rel="stylesheet" href="style.css?v=52">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -25,8 +25,29 @@
   <!-- ============================================= -->
   <div class="welcome" id="welcome">
     <div class="welcome-name">jackyedid.com</div>
-    <p class="welcome-line">Games, drawings and movies by Jack</p>
-    <button class="get-started" id="get-started">▶️ Get started</button>
+    <p class="welcome-line" id="welcome-line">Games, drawings and movies by Jack</p>
+
+    <!-- Two ways in. The first time, it asks your name and how old you are. -->
+    <div class="welcome-buttons" id="welcome-buttons">
+      <button class="get-started" id="first-time">⭐ It's my first time</button>
+      <button class="get-started played-before" id="played-before">👋 I've played it many times</button>
+    </div>
+
+    <!-- This only turns up if you say it is your first time. What you
+         write stays in your own browser - it is never sent anywhere and
+         it never goes on the website. -->
+    <form class="hello-form" id="hello-form" hidden>
+      <label class="hello-label">What is your name?
+        <input class="title-box" id="your-name" type="text" maxlength="20"
+               autocomplete="off" placeholder="your name">
+      </label>
+      <label class="hello-label">How old are you?
+        <input class="title-box" id="your-age" type="number" min="1" max="120"
+               inputmode="numeric" placeholder="7">
+      </label>
+      <button class="get-started" id="hello-done" type="submit">▶️ Let's go!</button>
+      <p class="hello-note">This stays on your own device. It is not sent anywhere.</p>
+    </form>
   </div>
 
   <div class="intro" id="intro" hidden>
@@ -50,6 +71,8 @@
   <header class="hero">
     <h1>Hi, I'm <span class="name">Jack</span>!</h1>
     <p class="tagline">I am 7 years old and this is my website.</p>
+    <!-- Says hello to you by name once you have told the website who you are. -->
+    <p class="hello-back" id="hello-back" hidden></p>
   </header>
 
   <main>
@@ -126,7 +149,7 @@
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="intro.js?v=6"></script>
+  <script src="intro.js?v=7"></script>
   <script src="script.js?v=2"></script>
   <script src="stars.js?v=7"></script>
   <script src="music.js?v=3"></script>

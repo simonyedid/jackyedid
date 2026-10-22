@@ -2024,6 +2024,52 @@ body { padding-bottom: 9rem; }
 
 .get-started:hover { transform: translateY(-3px); }
 
+/* The two ways in on the welcome screen. */
+.welcome-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.welcome-buttons .get-started { margin-top: 0.5rem; }
+
+.played-before { background: var(--accent-2); }
+
+/* Where you write your name and how old you are. */
+.hello-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.hello-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  color: #fff8e7;
+  font-weight: bold;
+  text-align: left;
+}
+
+.hello-note {
+  color: #cdc6b4;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Hello YOUR NAME, at the top of the page. */
+.hello-back {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin: 0.5rem 0 0;
+}
+
 /* ---------- The star strip along the top ---------- */
 
 .star-strip {
