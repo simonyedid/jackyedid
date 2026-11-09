@@ -120,3 +120,34 @@ without that, and Jack asked for it after being told.
 It only appears where the browser supports it, and it is switched off
 with an explanation where it doesn't. Nothing is recorded, stored or sent
 anywhere by this site itself.
+
+## The camera on the welcome screen
+
+The welcome screen has a third way in: **Scan your QR code here to log
+in**. Where the browser can read codes itself (`BarcodeDetector`, which
+Chrome has and Safari does not), it opens the camera and watches for a
+card. The picture never leaves the device — the code is read in the
+browser, nothing is recorded, and nothing is sent anywhere. Unlike the
+microphone key, no vendor service is involved at all.
+
+Where the browser can't, it says so and tells you to point the phone's
+own camera app at the card instead, which works everywhere.
+
+## The QR codes
+
+Two pictures in `images/`, both made once and committed:
+
+- `qr-code.svg` — plain `https://jackyedid.com`, on the home page.
+- `qr-login.svg` — `https://jackyedid.com/?hello=Jack&age=7`, on
+  `qr.html`, the printable card. Opening that address logs you in: the
+  name goes into the same browser storage the welcome screen writes, and
+  is then taken back out of the address bar.
+
+They were generated with `segno` and checked by decoding them back with
+OpenCV — including a screenshot of the page as rendered, so what is on
+screen really scans. If the address ever changes, make them again:
+
+    python3 tools/make-qr.py
+
+The card only carries a first name and an age, both already on the front
+page of the site. Don't put anything else in a QR code.

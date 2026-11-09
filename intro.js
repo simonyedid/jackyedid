@@ -24,6 +24,11 @@ var helloForm = document.getElementById("hello-form");
 var yourName = document.getElementById("your-name");
 var yourAge = document.getElementById("your-age");
 var helloBack = document.getElementById("hello-back");
+var scanButton = document.getElementById("scan-in");
+var scanner = document.getElementById("scanner");
+var camera = document.getElementById("camera");
+var scanWords = document.getElementById("scan-words");
+var scanStop = document.getElementById("scan-stop");
 var intro = document.getElementById("intro");
 var scene = document.getElementById("projector-scene");
 var leader = document.getElementById("leader");
@@ -113,6 +118,21 @@ function sayHello() {
   if (welcomeLine) welcomeLine.textContent = "Welcome back, " + you.name + "!";
 }
 
+// A QR card opens the website with your name in the address, like
+// jackyedid.com/?hello=Jack&age=7 - so scanning it logs you in.
+function loginFromTheAddress() {
+  var asked = new URLSearchParams(location.search);
+  var name = (asked.get("hello") || "").trim().slice(0, 20);
+  if (!name) return false;
+
+  rememberWhoIsPlaying(name, (asked.get("age") || "").trim().slice(0, 3));
+
+  // Take the name back out of the address bar, so it is tidy.
+  if (history.replaceState) history.replaceState(null, "", location.pathname);
+  return true;
+}
+
+var scannedIn = loginFromTheAddress();
 sayHello();
 
 // Pressing a button is also what lets the browser make noises later,
@@ -139,3 +159,88 @@ helloForm.addEventListener("submit", function (event) {
 
 // Been here before: straight in.
 document.getElementById("played-before").addEventListener("click", intoTheWebsite);
+
+// ============================================================
+// LOGGING IN WITH YOUR QR CARD
+// Hold the card up to the camera. The code is read here on the
+// device by the browser itself - no picture is ever sent anywhere,
+// and nothing is kept.
+// ============================================================
+
+var cameraRunning = null;      // the camera, while it is on
+var stillLooking = false;
+
+function canReadCodes() {
+  return typeof BarcodeDetector !== "undefined";
+}
+
+function stopTheCamera() {
+  stillLooking = false;
+  if (cameraRunning) {
+    cameraRunning.getTracks().forEach(function (bit) { bit.stop(); });
+    cameraRunning = null;
+  }
+  scanner.hidden = true;
+  welcomeButtons.hidden = false;
+}
+
+function keepLooking(reader) {
+  if (!stillLooking) return;
+
+  reader.detect(camera).then(function (codes) {
+    if (!stillLooking) return;
+
+    for (var i = 0; i < codes.length; i++) {
+      var says = codes[i].rawValue || "";
+      if (says.indexOf("hello=") === -1) continue;
+
+      // Found a card. Read the name out of it and come in.
+      var name = decodeURIComponent((says.split("hello=")[1] || "").split("&")[0]);
+      var age = decodeURIComponent((says.split("age=")[1] || "").split("&")[0]);
+      rememberWhoIsPlaying(name.trim().slice(0, 20), age.trim().slice(0, 3));
+      stopTheCamera();
+      intoTheWebsite();
+      return;
+    }
+
+    requestAnimationFrame(function () { keepLooking(reader); });
+  }).catch(function () {
+    requestAnimationFrame(function () { keepLooking(reader); });
+  });
+}
+
+scanButton.addEventListener("click", function () {
+  welcomeButtons.hidden = true;
+  scanner.hidden = false;
+
+  // Browsers that cannot read codes themselves: use the phone's own
+  // camera app on the card instead, which works everywhere.
+  if (!canReadCodes() || !navigator.mediaDevices) {
+    camera.hidden = true;
+    scanWords.innerHTML = "This browser cannot read codes by itself. " +
+      "Point your <strong>phone's camera app</strong> at your QR card instead " +
+      "\u2014 it opens the website and logs you straight in.";
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(function (pictures) {
+      cameraRunning = pictures;
+      camera.srcObject = pictures;
+      camera.play();
+      stillLooking = true;
+      scanWords.textContent = "Hold your QR card up to the camera...";
+      keepLooking(new BarcodeDetector({ formats: ["qr_code"] }));
+    })
+    .catch(function () {
+      camera.hidden = true;
+      scanWords.innerHTML = "No camera here. Point your <strong>phone's camera " +
+        "app</strong> at your QR card instead \u2014 it logs you straight in.";
+    });
+});
+
+scanStop.addEventListener("click", stopTheCamera);
+
+// Scanned your card with the phone's own camera? Then the website
+// already knows you, so it skips the questions and just goes in.
+if (scannedIn) intoTheWebsite();

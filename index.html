@@ -9,7 +9,7 @@
        The ?v=2 on the stylesheet below does the same job for the colors:
        bump it to v=3, v=4 and so on whenever style.css changes. -->
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-  <link rel="stylesheet" href="style.css?v=52">
+  <link rel="stylesheet" href="style.css?v=53">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
 </head>
 <body>
@@ -31,6 +31,15 @@
     <div class="welcome-buttons" id="welcome-buttons">
       <button class="get-started" id="first-time">⭐ It's my first time</button>
       <button class="get-started played-before" id="played-before">👋 I've played it many times</button>
+      <button class="get-started scan-in" id="scan-in">📷 Scan your QR code here to log in</button>
+    </div>
+
+    <!-- The camera, for logging in with your QR card. The picture never
+         leaves the browser: the code is read right here on the device. -->
+    <div class="scanner" id="scanner" hidden>
+      <video class="camera" id="camera" playsinline muted></video>
+      <p class="welcome-line" id="scan-words">Hold your QR card up to the camera...</p>
+      <button class="get-started" id="scan-stop">✖️ Stop the camera</button>
     </div>
 
     <!-- This only turns up if you say it is your first time. What you
@@ -143,13 +152,24 @@
       </p>
     </section>
 
+    <section class="card qr-card">
+      <h2>📱 Scan me!</h2>
+      <p>Point a phone camera at this and my website opens.</p>
+      <!-- Made from the address below. If the address ever changes,
+           the picture has to be made again. -->
+      <img class="qr-code" src="images/qr-code.svg" width="370" height="370"
+           alt="A QR code that opens jackyedid.com">
+      <p class="qr-address">jackyedid.com</p>
+      <p><a class="play-link" href="qr.html">📇 My QR card</a></p>
+    </section>
+
   </main>
 
   <footer>
     <p>Made by Jack Yedid 📽️ jackyedid.com</p>
   </footer>
 
-  <script src="intro.js?v=7"></script>
+  <script src="intro.js?v=8"></script>
   <script src="script.js?v=2"></script>
   <script src="stars.js?v=7"></script>
   <script src="music.js?v=3"></script>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My QR Card — Jack Yedid</title>
+  <meta name="description" content="Jack Yedid's QR card. Scan it to open the website and log in.">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+  <link rel="stylesheet" href="style.css?v=53">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>">
+</head>
+<body>
+
+  <header class="hero no-print">
+    <h1>📇 My <span class="name">QR Card</span></h1>
+    <p class="tagline">Print it, then scan it to log in!</p>
+  </header>
+
+  <main>
+
+    <!-- This is the bit that prints. Everything else is hidden on paper. -->
+    <section class="card qr-card print-me">
+      <div class="qr-card-top">JACKYEDID.COM</div>
+      <img class="qr-code big" src="images/qr-login.svg" width="450" height="450"
+           alt="A QR code that opens jackyedid.com and logs Jack in">
+      <p class="qr-card-name">JACK'S CARD</p>
+      <p class="qr-card-words">Scan me with a phone camera to log in</p>
+    </section>
+
+    <section class="card no-print">
+      <h2>🖨️ Print it</h2>
+      <p>
+        Press the button and only the card comes out — none of the rest of
+        the page. Cut it out and keep it somewhere safe.
+      </p>
+      <button id="print-button">🖨️ Print my card</button>
+    </section>
+
+    <section class="card no-print">
+      <h2>❓ How it works</h2>
+      <p>
+        Point a phone camera at the card. The camera sees the code, the
+        website opens, and it already knows who you are — so it says
+        <strong>Welcome back, Jack!</strong> instead of asking.
+      </p>
+      <p>
+        The card only knows a first name and an age. Nothing else is in it,
+        and nothing is sent anywhere.
+      </p>
+    </section>
+
+    <p class="back-link no-print"><a href="index.html">← Back to my website</a></p>
+
+  </main>
+
+  <footer class="no-print">
+    <p>Made by Jack Yedid 📽️ jackyedid.com</p>
+  </footer>
+
+  <script src="qr.js?v=1"></script>
+  <script src="music.js?v=3"></script>
+</body>
+</html>
