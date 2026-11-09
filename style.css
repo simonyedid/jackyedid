@@ -2137,22 +2137,51 @@ body { padding-bottom: 9rem; }
 
 .qr-card-words { margin: 0; font-size: 0.95rem; }
 
-/* When you print the page, only the card comes out. */
+/* When you print the page, only the card comes out - big, in the middle
+   of the paper, with a dashed line to cut along. */
 @media print {
+  @page { size: A4; margin: 12mm; }
+
   .no-print, .star-strip, .music-bar, .spotify-panel { display: none !important; }
 
-  body { padding: 0; background: #fff; }
+  body { padding: 0; background: #fff; color: #000; }
 
-  main { display: block; }
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250mm;        /* the page, so the card sits in the middle */
+    max-width: none;
+  }
 
   .print-me {
     box-shadow: none;
-    border: 4px solid #000;
+    border: 3px dashed #000;
+    border-radius: 0;
     margin: 0 auto;
-    max-width: 420px;
+    width: 160mm;
+    max-width: 160mm;
+    padding: 12mm 8mm;
     page-break-inside: avoid;
   }
+
+  /* The code itself fills most of the card, so it is easy to scan. */
+  .print-me .qr-code.big {
+    max-width: 120mm;
+    border: none;
+    padding: 0;
+  }
+
+  .print-me .qr-card-top { font-size: 14pt; letter-spacing: 4px; }
+  .print-me .qr-card-name { font-size: 24pt; color: #000; }
+  .print-me .qr-card-words { font-size: 11pt; }
+
+  /* Only on paper: where to cut. */
+  .cut-here { display: block !important; font-size: 10pt; margin-top: 6mm; }
 }
+
+/* On screen there is nothing to cut. */
+.cut-here { display: none; }
 
 /* ---------- The star strip along the top ---------- */
 
