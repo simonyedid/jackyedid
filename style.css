@@ -2154,30 +2154,32 @@ body { padding-bottom: 9rem; }
     max-width: none;
   }
 
+  /* On paper it is JUST the code - no border, no writing, nothing else.
+     The card look is only for the screen. */
   .print-me {
     box-shadow: none;
-    border: 3px dashed #000;
+    border: none;
     border-radius: 0;
     margin: 0 auto;
-    width: 160mm;
-    max-width: 160mm;
-    padding: 12mm 8mm;
+    padding: 0;
+    width: auto;
+    max-width: none;
     page-break-inside: avoid;
   }
 
-  /* The code itself fills most of the card, so it is easy to scan. */
+  .print-me .qr-card-top,
+  .print-me .qr-card-name,
+  .print-me .qr-card-words,
+  .cut-here { display: none !important; }
+
+  /* The code, as big as fits on the paper. */
   .print-me .qr-code.big {
-    max-width: 120mm;
+    width: 150mm;
+    max-width: 150mm;
+    height: auto;
     border: none;
     padding: 0;
   }
-
-  .print-me .qr-card-top { font-size: 14pt; letter-spacing: 4px; }
-  .print-me .qr-card-name { font-size: 24pt; color: #000; }
-  .print-me .qr-card-words { font-size: 11pt; }
-
-  /* Only on paper: where to cut. */
-  .cut-here { display: block !important; font-size: 10pt; margin-top: 6mm; }
 }
 
 /* On screen there is nothing to cut. */
